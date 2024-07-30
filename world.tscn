@@ -3,8 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://ccpnhnf70iqyp" path="res://Assets/panorama_image.png" id="1_vneaj"]
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="1_yukp5"]
 [ext_resource type="Texture2D" uid="uid://cgoye2p75nh5k" path="res://Assets/crosshair.png" id="2_v8r2h"]
-[ext_resource type="Script" path="res://Scripts/Crosshair.gd" id="3_d54j1"]
-[ext_resource type="Shader" path="res://Scripts/cctv.gdshader" id="3_lt5no"]
+[ext_resource type="Script" path="res://Scripts/CrosshairLine.gd" id="3_d54j1"]
+[ext_resource type="Shader" path="res://Scripts/shader.gdshader" id="3_lt5no"]
 [ext_resource type="PackedScene" uid="uid://bigwc0sppj0fo" path="res://Wikiplanet Space Station (WSS).glb" id="7_el1x2"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_n2if7"]
@@ -24,28 +24,20 @@ points = PackedVector3Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ap7gf"]
 shader = ExtResource("3_lt5no")
-shader_parameter/overlay = false
-shader_parameter/scanlines_opacity = 0.4
-shader_parameter/scanlines_width = 0.25
-shader_parameter/grille_opacity = 0.3
-shader_parameter/resolution = Vector2(718.08, 403.92)
-shader_parameter/pixelate = true
-shader_parameter/static_noise_intensity = 0.114
-shader_parameter/aberration = 0.03
-shader_parameter/brightness = 1.4
-shader_parameter/discolor = true
-shader_parameter/warp_amount = 1.0
-shader_parameter/clip_warp = false
-shader_parameter/vignette_intensity = 0.4
+shader_parameter/static_noise_intensity = 0.2
+shader_parameter/vignette_intensity = 1.0
 shader_parameter/vignette_opacity = 0.5
+shader_parameter/scanline_count = 200.0
+shader_parameter/contrast = 2.0
 
 [node name="World" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1q1mr")
 
-[node name="Player" type="RigidBody3D" parent="."]
+[node name="Player" type="RigidBody3D" parent="." node_paths=PackedStringArray("line")]
 script = ExtResource("1_yukp5")
+line = NodePath("../CanvasLayer/Crosshair/Line")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
 mesh = SubResource("BoxMesh_eksfv")
@@ -57,12 +49,12 @@ shape = SubResource("ConvexPolygonShape3D_vqq4l")
 transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Player"]
-spot_range = 100.0
+spot_range = 200.0
 spot_angle = 60.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="CCTV" type="ColorRect" parent="CanvasLayer"]
+[node name="Shader" type="ColorRect" parent="CanvasLayer"]
 material = SubResource("ShaderMaterial_ap7gf")
 anchors_preset = 15
 anchor_right = 1.0
@@ -98,4 +90,4 @@ grow_vertical = 2
 script = ExtResource("3_d54j1")
 
 [node name="Wikiplanet Space Station (WSS)" parent="." instance=ExtResource("7_el1x2")]
-transform = Transform3D(0.815654, 0.525739, 0.241468, -0.504112, 0.850646, -0.149239, -0.283865, 0, 0.958864, -13.4075, 0, 11.3327)
+transform = Transform3D(0.815654, 0.525739, 0.241468, -0.504112, 0.850646, -0.149239, -0.283865, 0, 0.958864, -3.48003, 0, -22.147)

@@ -1,6 +1,5 @@
 extends Control
 
-
 func _draw():
 	var mouse = clamped_mouse()
 	draw_circle(mouse, 4.0, Color.WHITE)
