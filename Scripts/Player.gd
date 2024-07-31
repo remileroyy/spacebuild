@@ -8,21 +8,36 @@ extends RigidBody3D
 @export var text : RichTextLabel
 
 var looking_at : Dictionary
+var matching_velocity_with : RigidBody3D
 
 func _ready():
-	angular_damp = TORQUE
+	angular_damp = 2 * TORQUE
+	linear_damp = 0.0
 
 func _process(_delta):
 	var space_state = get_world_3d().direct_space_state
 	var query = PhysicsRayQueryParameters3D.create(position, position + transform.basis * Vector3.FORWARD)
 	looking_at = space_state.intersect_ray(query)
-	text.text = "%.2f" % linear_velocity.length() #looking_at.collider.name if looking_at else ""
+	text.text = "%.2f" % linear_velocity.length()
+
+func find_closest_rb():
+	var closest : RigidBody3D
+	var d_min = 10000.0
+	for node in get_tree().get_nodes_in_group("Matching"):
+		var rb = node as RigidBody3D
+		var d = rb.position.distance_squared_to(position)
+		if rb.get_path() != $Joint.node_b and d < d_min:
+			closest = rb
+			d_min = d
+	return closest
 
 func _physics_process(_delta):
 	if Input.is_action_just_pressed("Space"):
-		linear_damp = THRUST
-	elif Input.is_action_just_released("Space"):
-		linear_damp = 0.0
+		matching_velocity_with = find_closest_rb()
+	if Input.is_action_pressed("Space"):
+		var match_force = matching_velocity_with.linear_velocity if matching_velocity_with else Vector3.ZERO
+		match_force = Vector3.ZERO.move_toward(match_force - linear_velocity, THRUST)
+		apply_central_force(match_force)
 	input_rotate()
 	input_translate()
 
@@ -53,5 +68,5 @@ func _input(event):
 			$Joint.node_a = ""
 			$Joint.node_b = ""
 		elif looking_at:
-				$Joint.node_a = self.get_path()
-				$Joint.node_b = looking_at.collider.get_path()
+			$Joint.node_a = self.get_path()
+			$Joint.node_b = looking_at.collider.get_path()

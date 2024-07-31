@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bhf7hrdyfa6n5"
+uid="uid://dwvaxbxye27c8"
 path="res://.godot/imported/Sputnik.glb-9913e9f064cf36600e842bb1aee26ee9.scn"
 
 [deps]
@@ -31,7 +31,7 @@ animation/remove_immutable_tracks=true
 import_script/path=""
 _subresources={
 "nodes": {
-"PATH:ProbodobodyneStayputnik_mesh": {
+"PATH:Sketchfab Model": {
 "generate/physics": true,
 "physics/body_type": 1,
 "physics/shape_type": 1
