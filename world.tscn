@@ -27,6 +27,9 @@ background_mode = 2
 background_energy_multiplier = 5.0
 sky = SubResource("Sky_58ame")
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_pa7ku"]
+radius = 30.0
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3xgdo"]
 resource_name = "Sputnik_mat"
 cull_mode = 2
@@ -72,10 +75,7 @@ shadow_mesh = SubResource("ArrayMesh_brxsk")
 points = PackedVector3Array(-3.97006, 0.87392, -0.000777245, -3.41124, -0.502033, 1.45807, -3.64907, 0.87392, 1.56611, -3.97006, 1.03907, -0.000777245, -3.64907, 0.87392, -1.56688, -3.41124, -0.502033, -1.45885, -3.66461, -0.612418, -0.000777245, -2.655, -0.383092, 2.65422, -2.48245, -3.33266, -0.000777245, -2.15058, -3.33266, 1.24045, -2.80889, 0.87392, 2.80733, -3.64907, 1.03907, 1.56611, -3.41124, 2.41417, 1.45807, -3.66461, 2.52455, -0.000777245, -3.41124, 2.41417, -1.45885, -3.64907, 1.03907, -1.56688, -2.80811, 0.87392, -2.80889, -2.655, -0.383092, -2.655, -2.15058, -3.33266, -1.24123, -3.32186, -1.34147, -0.153891, -1.45885, -0.502033, 3.41046, -1.56688, 0.87392, 3.64829, -2.25317, -1.34147, 2.44515, -2.04021, -1.34147, 2.62391, -2.22908, -3.79902, -0.000777245, -1.93062, -3.79902, 1.11376, -1.24123, -3.33266, 2.1498, -2.80889, 1.03907, 2.80733, -2.655, 2.29608, 2.65422, -2.30136, 3.25702, 2.30058, -2.65422, 3.61042, 1.33916, -2.81899, 3.77472, -0.000777245, -2.65422, 3.61042, -1.33993, -2.30136, 3.25702, -2.30136, -2.655, 2.29608, -2.655, -2.80811, 1.03907, -2.80889, -1.56688, 0.87392, -3.64907, -1.45885, -0.502033, -3.41124, -2.04021, -1.34147, -2.62469, -2.25317, -1.34147, -2.44592, -1.24123, -3.33266, -2.15058, -1.93062, -3.79902, -1.11454, -0.000774145, -0.612418, 3.66383, -0.000774145, 0.87392, 3.96928, 2.86102e-06, -3.33266, 2.48168, -0.153888, -1.34147, 3.32108, -1.56688, 1.03907, 3.64829, -1.11454, -3.79902, 1.92985, 2.86102e-06, -3.79902, 2.2283, -1.45885, 2.41417, 3.41046, -1.33993, 3.61042, 2.65344, -1.45807, 4.36771, 1.4573, -1.56921, 4.621, -0.000777245, -1.45807, 4.36771, -1.45807, -1.45885, 2.41417, -3.41124, -1.33993, 3.61042, -2.65422, -1.56688, 1.03907, -3.64907, -0.000774145, 0.87392, -3.97006, -0.000774145, -0.612418, -3.66461, 2.86102e-06, -3.33266, -2.48245, 2.86102e-06, -3.79902, -2.22908, -1.11454, -3.79902, -1.93062, 1.45808, -0.502033, 3.41046, 1.56611, 0.87392, 3.64829, -0.000774145, 1.03907, 3.96928, 1.24045, -3.33266, 2.1498, 1.11377, -3.79902, 1.92985, -0.000774145, 2.52541, 3.66383, -0.000774145, 3.77472, 2.81821, -0.000774145, 4.621, 1.56844, -0.000774145, 4.94274, -0.000777245, -0.000774145, 4.621, -1.56922, -0.000774145, 2.52455, -3.66461, -0.000774145, 1.03907, -3.97006, -0.000774145, 3.77472, -2.81899, 1.56611, 0.87392, -3.64907, 1.45808, -0.502033, -3.41124, 0.153116, -1.34147, -3.32186, 1.24045, -3.33266, -2.15058, 1.11377, -3.79902, -1.93062, 2.03944, -1.34147, 2.62391, 2.65423, -0.383092, 2.65422, 2.80734, 0.87392, 2.80733, 1.56611, 1.03907, 3.64829, 1.45808, 2.41417, 3.41046, 2.14981, -3.33266, 1.24045, 2.2524, -1.34147, 2.44515, 1.92985, -3.79902, 1.11376, 1.33916, 3.61042, 2.65344, 1.4573, 4.36771, 1.4573, 1.56844, 4.621, -0.000777245, 1.4573, 4.36771, -1.45807, 1.33916, 3.61042, -2.65422, 1.45808, 2.41417, -3.41124, 1.56611, 1.03907, -3.64907, 2.65423, -0.383092, -2.655, 2.80734, 0.87392, -2.80811, 2.03944, -1.34147, -2.62469, 2.14981, -3.33266, -1.24123, 2.2524, -1.34147, -2.44592, 1.92985, -3.79902, -1.11454, 3.41047, -0.502033, 1.45807, 3.6483, 0.87392, 1.56611, 2.80734, 1.03907, 2.80733, 2.65423, 2.29608, 2.65422, 2.30059, 3.25702, 2.30058, 2.22831, -3.79902, -0.000777245, 2.48168, -3.33266, -0.000777245, 2.65345, 3.61042, 1.33916, 2.81822, 3.77472, -0.000777245, 2.65345, 3.61042, -1.33993, 2.30059, 3.25702, -2.30136, 2.65423, 2.29608, -2.655, 2.80734, 1.03907, -2.80811, 3.41047, -0.502033, -1.45885, 3.6483, 0.87392, -1.56688, 3.32109, -1.34147, 0.153113, 3.66384, -0.612418, -0.000777245, 3.97007, 0.87392, -0.000777245, 3.6483, 1.03907, 1.56611, 3.41047, 2.41417, 1.45807, 3.66384, 2.52541, -0.000777245, 3.41047, 2.41417, -1.45885, 3.6483, 1.03907, -1.56688, 3.97007, 1.03907, -0.000777245)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_vip75"]
-radius = 10.0
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_pa7ku"]
-radius = 30.0
+radius = 2.0
 
 [node name="World" type="Node3D"]
 
@@ -134,6 +134,26 @@ environment = SubResource("Environment_1q1mr")
 
 [node name="Sputnik" type="RigidBody3D" parent="."]
 transform = Transform3D(-0.978358, -0.206921, 9.04482e-09, 0, -4.37114e-08, -1, 0.206921, -0.978358, 4.27654e-08, -1.67708, 9.61917, -19.341)
+mass = 10.0
+
+[node name="Player" type="Camera3D" parent="Sputnik" node_paths=PackedStringArray("text")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -3.9, 0)
+far = 20000.0
+script = ExtResource("1_yukp5")
+THRUST = 10.0
+TORQUE = 100.0
+text = NodePath("../../GUI/Text")
+
+[node name="RayCast3D" type="RayCast3D" parent="Sputnik/Player"]
+target_position = Vector3(0, 0, -10)
+
+[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik/Player"]
+
+[node name="MatchingVelocity" type="Area3D" parent="Sputnik/Player"]
+collision_layer = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik/Player/MatchingVelocity"]
+shape = SubResource("SphereShape3D_pa7ku")
 
 [node name="Sketchfab Model" type="MeshInstance3D" parent="Sputnik"]
 mesh = SubResource("ArrayMesh_2q014")
@@ -143,7 +163,7 @@ skeleton = NodePath("")
 shape = SubResource("ConvexPolygonShape3D_k0rkw")
 
 [node name="Sputnik2" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -1, 8.74227e-08, 0, -8.74228e-08, -0.999999, 0, 0, 0)
+transform = Transform3D(0.829779, 0.558092, 0.000974078, 0.558093, -0.829777, -0.00144827, 0, 0.00174537, -0.999998, 14.0052, 10, 0)
 
 [node name="Sketchfab Model" type="MeshInstance3D" parent="Sputnik2"]
 transform = Transform3D(1, -5.96046e-08, 0, 5.96046e-08, 1, 0, 0, 0, 1, 0, 0, 0)
@@ -155,17 +175,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 3.55271e-15, 0, -3.55271e-15, 1, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_k0rkw")
 
 [node name="Snap" type="Area3D" parent="Sputnik2"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -3.8, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -4.76837e-07, -3.8, -7.15256e-07)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik2/Snap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, -3.55271e-15, 1, 0, 0, 0)
+transform = Transform3D(1, 0, -2.98023e-08, -1.49012e-08, 1, 2.98023e-08, -2.98023e-08, 5.96046e-08, 1, 0, 0, 0)
 shape = SubResource("SphereShape3D_vip75")
 
 [node name="Sprite3D" type="Sprite3D" parent="Sputnik2/Snap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, -1.42109e-14, 1, 0, 0, 0)
 modulate = Color(1, 0, 0, 1)
 pixel_size = 0.0005
 billboard = 1
@@ -175,26 +194,8 @@ texture = ExtResource("2_v8r2h")
 
 [node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik2/Snap"]
 
-[node name="Player" type="Camera3D" parent="Sputnik2" node_paths=PackedStringArray("text")]
-transform = Transform3D(-0.978358, -1.32768e-15, -0.206921, -1.80896e-08, -1, 8.55308e-08, -0.206921, 8.74229e-08, 0.978359, -0.870088, -9.61917, 15.5254)
-far = 20000.0
-script = ExtResource("1_yukp5")
-TORQUE = 10.0
-text = NodePath("../../GUI/Text")
-
-[node name="RayCast3D" type="RayCast3D" parent="Sputnik2/Player"]
-target_position = Vector3(0, 0, -10)
-
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik2/Player"]
-
-[node name="MatchingVelocity" type="Area3D" parent="Sputnik2/Player"]
-collision_layer = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik2/Player/MatchingVelocity"]
-shape = SubResource("SphereShape3D_pa7ku")
-
 [node name="Sputnik3" type="RigidBody3D" parent="."]
-transform = Transform3D(0.41839, -0.908267, 0, 0.908267, 0.41839, 0, 0, 0, 0.999999, -3.42303, 13.4666, 0)
+transform = Transform3D(0.374105, -0.927384, -0.00161863, -0.927387, -0.374104, -0.000652951, 0, 0.00174537, -0.999998, -10.3299, 10, 0)
 
 [node name="Sketchfab Model" type="MeshInstance3D" parent="Sputnik3"]
 transform = Transform3D(1, -5.96046e-08, 0, 5.96046e-08, 1, 0, 0, 0, 1, 0, 0, 0)
@@ -206,12 +207,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 3.55271e-15, 0, -3.55271e-15, 1, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_k0rkw")
 
 [node name="Snap" type="Area3D" parent="Sputnik3"]
-transform = Transform3D(1, 0, -2.98023e-08, -2.98023e-08, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -3.8, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -4.76837e-07, -3.8, -7.15256e-07)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik3/Snap"]
+transform = Transform3D(1, 0, -2.98023e-08, -1.49012e-08, 1, 2.98023e-08, -2.98023e-08, 5.96046e-08, 1, 0, 0, 0)
 shape = SubResource("SphereShape3D_vip75")
 
 [node name="Sprite3D" type="Sprite3D" parent="Sputnik3/Snap"]
