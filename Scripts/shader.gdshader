@@ -2,9 +2,10 @@ shader_type canvas_item;
 
 uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
 uniform float static_noise_intensity : hint_range(0.0, 1.0) = 0.2;
-uniform float vignette_intensity : hint_range(0.0, 1.0) = 0.5;
+uniform float vignette_intensity : hint_range(0.0, 1.0) = 0.2;
 uniform float scanline_count : hint_range(0, 1800) = 200.0;
 uniform float contrast = 2.0;
+uniform bool greyscale = true;
 
 // Used by the noise functin to generate a pseudo random value between 0.0 and 1.0
 float random(vec2 uv){
@@ -26,7 +27,7 @@ void fragment()
 	// Vignette
 	text.rgb *= vignette(UV);
 	// Greyscale
-	text.rgb = vec3(text.r + text.g + text.b) / 3.;
+	if (greyscale) text.rgb = vec3(text.r + text.g + text.b) / 3.;
 	// Scanlines
 	float s = sin(UV.y * scanline_count * PI * 2.0);
 	s = (s * 0.5 + 0.5) * 0.9 + 0.1;

@@ -72,9 +72,15 @@ Space={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_1="Bodies"
+3d_physics/layer_2="Snap"
+3d_physics/layer_3="Matching Velocity"
+
 [physics]
 
+3d/physics_engine="JoltPhysics3D"
 3d/default_gravity=0.0
-3d/default_gravity_vector=Vector3(0, 0, 0)
 3d/default_linear_damp=0.0
 3d/default_angular_damp=0.0
