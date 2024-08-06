@@ -16,10 +16,6 @@ func _ready():
 
 func _process(_delta):
 	text.text = "%.2f\n" % rb.linear_velocity.length()
-	if matching_velocity_with:
-		text.text += "%.2f\n" % (matching_velocity_with.linear_velocity - rb.linear_velocity).length()
-	else:
-		text.text += "\n"
 	if $RayCast3D.get_collider():
 		text.text += $RayCast3D.get_collider().name
 
@@ -28,20 +24,17 @@ func find_closest():
 	var d_min = INF
 	for close in $MatchingVelocity.get_overlapping_bodies():
 		var d = close.position.distance_squared_to(position)
-		if close != rb and close.get_path() != $Joint.node_b and d < d_min:
+		if close != rb and d < d_min:
 			closest = close
 			d_min = d
 	return closest
 
 func _physics_process(_delta):
-	if Input.is_action_just_pressed("Space"):
-		matching_velocity_with = find_closest()
-	if Input.is_action_pressed("Space"):
-		var match_vel = matching_velocity_with.linear_velocity if matching_velocity_with else Vector3.ZERO
-		var match_force = Vector3.ZERO.move_toward(match_vel - rb.linear_velocity, THRUST)
-		rb.apply_central_force(match_force)
+	if input_translate():
+		rb.linear_damp = 0.0
+	else:
+		rb.linear_damp = 1.0
 	input_rotate()
-	input_translate()
 
 func input_rotate():
 	var mouse = get_viewport().get_mouse_position()
@@ -55,20 +48,37 @@ func input_rotate():
 	input.x = -mouse.y
 	input.y = -mouse.x
 	input.z = Input.get_action_strength("Roll-") - Input.get_action_strength("Roll+")
-	rb.apply_torque(TORQUE * (rb.basis * basis * input))
+	rb.apply_torque(global_basis * input * TORQUE)
 	
 func input_translate():
 	var input = Vector3() 
 	input.x = Input.get_action_strength("Right") - Input.get_action_strength("Left")
 	input.y = Input.get_action_strength("Up") - Input.get_action_strength("Down")
 	input.z = Input.get_action_strength("Back") - Input.get_action_strength("Forward")
-	rb.apply_central_force(THRUST * (rb.basis * basis * input))
+	rb.apply_central_force(THRUST * (global_basis * input))
+	return input != Vector3.ZERO
+	
+func disconnect_from(path):
+	print(path)
+	if $Joint.node_b == path:
+		$Joint.node_a = ""
+		$Joint.node_b = ""
 	
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed():
-		if $Joint.node_a:
-			$Joint.node_a = ""
-			$Joint.node_b = ""
-		elif $RayCast3D.get_collider():
-			$Joint.node_a = rb.get_path()
-			$Joint.node_b = $RayCast3D.get_collider().get_path()
+		if event.button_index == 1:
+			if $Joint.node_a:
+				disconnect_from($Joint.node_b)
+			elif $RayCast3D.get_collider():
+				$Joint.node_a = rb.get_path()
+				$Joint.node_b = $RayCast3D.get_collider().get_path()
+				var children = $RayCast3D.get_collider().get_children()
+				for child in children:
+					if child.has_method("snap_to"):
+						child.snapping = true
+		elif event.button_index == 2:
+			if $RayCast3D.get_collider():
+				var children = $RayCast3D.get_collider().get_children()
+				for child in children:
+					if child.has_method("snap_to"):
+						child.disconnect_from(true)
