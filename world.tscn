@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://c4s01kqop3hhu"]
+[gd_scene load_steps=18 format=3 uid="uid://c4s01kqop3hhu"]
 
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="1_yukp5"]
 [ext_resource type="Texture2D" uid="uid://dxig7c1a2oy31" path="res://Assets/cross.svg" id="2_tmhqi"]
@@ -7,7 +7,7 @@
 [ext_resource type="Script" path="res://Scripts/Crosshair.gd" id="5_ntoww"]
 [ext_resource type="Script" path="res://Scripts/Snap.gd" id="7_402tn"]
 [ext_resource type="Texture2D" uid="uid://dmpjsb57qmark" path="res://Assets/Sputnik_ProbodobodyneStayputnik_mat_baseColor.png" id="7_kmqt2"]
-[ext_resource type="Texture2D" uid="uid://bg4ovm8mw1hpa" path="res://Assets/square.svg" id="8_w3ica"]
+[ext_resource type="Texture2D" uid="uid://bg4ovm8mw1hpa" path="res://Assets/dot.svg" id="8_w3ica"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ap7gf"]
 shader = ExtResource("3_lt5no")
@@ -27,9 +27,6 @@ sky_material = SubResource("PanoramaSkyMaterial_n2if7")
 background_mode = 2
 background_energy_multiplier = 5.0
 sky = SubResource("Sky_58ame")
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_pa7ku"]
-radius = 30.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3xgdo"]
 resource_name = "Sputnik_mat"
@@ -134,11 +131,12 @@ script = ExtResource("5_ntoww")
 environment = SubResource("Environment_1q1mr")
 
 [node name="PlayerSputnik" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -1.67708, 9.61917, -19.341)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -14.5374)
 mass = 10.0
+center_of_mass_mode = 1
 
 [node name="Player" type="Camera3D" parent="PlayerSputnik" node_paths=PackedStringArray("text") groups=["Player"]]
-transform = Transform3D(1, 7.10543e-15, 3.10588e-22, 0, -4.37114e-08, 1, 7.10543e-15, -1, -4.37114e-08, -1.43051e-06, -3.9, 0)
+transform = Transform3D(-1, 8.74228e-08, 0, 3.82137e-15, 4.37114e-08, 1, 8.74228e-08, 1, -4.37114e-08, -1.43051e-06, -3.9, 0)
 far = 20000.0
 script = ExtResource("1_yukp5")
 THRUST = 100.0
@@ -147,12 +145,6 @@ text = NodePath("../../GUI/Text")
 
 [node name="RayCast3D" type="RayCast3D" parent="PlayerSputnik/Player"]
 target_position = Vector3(0, 0, -10)
-
-[node name="MatchingVelocity" type="Area3D" parent="PlayerSputnik/Player"]
-collision_layer = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerSputnik/Player/MatchingVelocity"]
-shape = SubResource("SphereShape3D_pa7ku")
 
 [node name="Joint" type="Generic6DOFJoint3D" parent="PlayerSputnik/Player"]
 
@@ -163,10 +155,85 @@ skeleton = NodePath("")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerSputnik"]
 shape = SubResource("ConvexPolygonShape3D_k0rkw")
 
-[node name="Sputnik2" type="RigidBody3D" parent="."]
-transform = Transform3D(-0.792404, -0.605551, 0.0735169, 0.570252, -0.692581, 0.441752, -0.216587, 0.391969, 0.894119, -17.5062, 0, 2.38018)
+[node name="Sputnik1" type="RigidBody3D" parent="."]
+transform = Transform3D(0.708303, 0.705909, 0, -0.705909, 0.708303, 0, 0, 0, 0.999999, 9.12656, 0, 0)
+center_of_mass_mode = 1
 
-[node name="Sketchfab Model" type="MeshInstance3D" parent="Sputnik2"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Sputnik1"]
+mesh = SubResource("ArrayMesh_2q014")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik1"]
+shape = SubResource("ConvexPolygonShape3D_k0rkw")
+
+[node name="Snap" type="Area3D" parent="Sputnik1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.76837e-07, -3.8, -7.15256e-07)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("7_402tn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik1/Snap"]
+transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
+shape = SubResource("SphereShape3D_vip75")
+
+[node name="Sprite3D" type="Sprite3D" parent="Sputnik1/Snap"]
+modulate = Color(1, 0, 0, 1)
+pixel_size = 0.0005
+billboard = 1
+no_depth_test = true
+fixed_size = true
+texture = ExtResource("8_w3ica")
+
+[node name="RayCast3D" type="RayCast3D" parent="Sputnik1/Snap"]
+enabled = false
+
+[node name="Snap2" type="Area3D" parent="Sputnik1"]
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 4.9, 0)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("7_402tn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik1/Snap2"]
+transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
+shape = SubResource("SphereShape3D_vip75")
+
+[node name="Sprite3D" type="Sprite3D" parent="Sputnik1/Snap2"]
+modulate = Color(1, 0, 0, 1)
+pixel_size = 0.0005
+billboard = 1
+no_depth_test = true
+fixed_size = true
+texture = ExtResource("8_w3ica")
+
+[node name="RayCast3D" type="RayCast3D" parent="Sputnik1/Snap2"]
+enabled = false
+
+[node name="Snap3" type="Area3D" parent="Sputnik1"]
+transform = Transform3D(-1, 8.74228e-08, 0, 3.82137e-15, 4.37114e-08, 1, 8.74228e-08, 1, -4.37114e-08, -1.63729e-07, 1.15431, -3.93851)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("7_402tn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik1/Snap3"]
+transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
+shape = SubResource("SphereShape3D_vip75")
+
+[node name="Sprite3D" type="Sprite3D" parent="Sputnik1/Snap3"]
+modulate = Color(1, 0, 0, 1)
+pixel_size = 0.0005
+billboard = 1
+no_depth_test = true
+fixed_size = true
+texture = ExtResource("8_w3ica")
+
+[node name="RayCast3D" type="RayCast3D" parent="Sputnik1/Snap3"]
+enabled = false
+
+[node name="Sputnik2" type="RigidBody3D" parent="."]
+transform = Transform3D(-0.553568, 0.429113, -0.713739, 0.612659, 0.790348, -2.3778e-08, 0.564103, -0.437279, -0.70041, -7.14467, 6.39327, 0)
+center_of_mass_mode = 1
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Sputnik2"]
 mesh = SubResource("ArrayMesh_2q014")
 skeleton = NodePath("")
 
@@ -191,16 +258,56 @@ no_depth_test = true
 fixed_size = true
 texture = ExtResource("8_w3ica")
 
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik2/Snap"]
-
 [node name="RayCast3D" type="RayCast3D" parent="Sputnik2/Snap"]
-transform = Transform3D(2, -5.96059e-08, -1.16417e-10, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+enabled = false
+
+[node name="Snap2" type="Area3D" parent="Sputnik2"]
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 4.9, 0)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("7_402tn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik2/Snap2"]
+transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
+shape = SubResource("SphereShape3D_vip75")
+
+[node name="Sprite3D" type="Sprite3D" parent="Sputnik2/Snap2"]
+modulate = Color(1, 0, 0, 1)
+pixel_size = 0.0005
+billboard = 1
+no_depth_test = true
+fixed_size = true
+texture = ExtResource("8_w3ica")
+
+[node name="RayCast3D" type="RayCast3D" parent="Sputnik2/Snap2"]
+enabled = false
+
+[node name="Snap3" type="Area3D" parent="Sputnik2"]
+transform = Transform3D(-1, 8.74228e-08, 0, 3.82137e-15, 4.37114e-08, 1, 8.74228e-08, 1, -4.37114e-08, -1.63729e-07, 1.15431, -3.93851)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("7_402tn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik2/Snap3"]
+transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
+shape = SubResource("SphereShape3D_vip75")
+
+[node name="Sprite3D" type="Sprite3D" parent="Sputnik2/Snap3"]
+modulate = Color(1, 0, 0, 1)
+pixel_size = 0.0005
+billboard = 1
+no_depth_test = true
+fixed_size = true
+texture = ExtResource("8_w3ica")
+
+[node name="RayCast3D" type="RayCast3D" parent="Sputnik2/Snap3"]
 enabled = false
 
 [node name="Sputnik3" type="RigidBody3D" parent="."]
-transform = Transform3D(-0.0472634, 0.998882, 0, -0.998883, -0.0472633, 0, 0, 0, 0.999999, 19.914, 0, 2.38018)
+transform = Transform3D(-0.733918, -0.654221, -0.182647, -0.378356, 0.617076, -0.689973, 0.564102, -0.437279, -0.70041, 9.7835, 11.7328, 0)
+center_of_mass_mode = 1
 
-[node name="Sketchfab Model" type="MeshInstance3D" parent="Sputnik3"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Sputnik3"]
 mesh = SubResource("ArrayMesh_2q014")
 skeleton = NodePath("")
 
@@ -225,14 +332,11 @@ no_depth_test = true
 fixed_size = true
 texture = ExtResource("8_w3ica")
 
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik3/Snap"]
-
 [node name="RayCast3D" type="RayCast3D" parent="Sputnik3/Snap"]
-transform = Transform3D(2, -5.96059e-08, -1.16417e-10, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 enabled = false
 
 [node name="Snap2" type="Area3D" parent="Sputnik3"]
-transform = Transform3D(-1, -8.74228e-08, 0, 8.74228e-08, -1, 0, 0, 0, 1, -4.76837e-07, 4.88075, -7.15256e-07)
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 4.9, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -249,33 +353,20 @@ no_depth_test = true
 fixed_size = true
 texture = ExtResource("8_w3ica")
 
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik3/Snap2"]
-
 [node name="RayCast3D" type="RayCast3D" parent="Sputnik3/Snap2"]
-transform = Transform3D(2, -5.96059e-08, -1.16417e-10, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 enabled = false
 
-[node name="Sputnik6" type="RigidBody3D" parent="."]
-transform = Transform3D(0.253736, 0.255603, -0.93289, -0.709694, 0.70451, 0, 0.657232, 0.662066, 0.360159, 13.063, 12.0578, 2.38018)
-
-[node name="Sketchfab Model" type="MeshInstance3D" parent="Sputnik6"]
-mesh = SubResource("ArrayMesh_2q014")
-skeleton = NodePath("")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik6"]
-shape = SubResource("ConvexPolygonShape3D_k0rkw")
-
-[node name="Snap" type="Area3D" parent="Sputnik6"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.76837e-07, -3.8, -7.15256e-07)
+[node name="Snap3" type="Area3D" parent="Sputnik3"]
+transform = Transform3D(-1, 8.74228e-08, 0, 3.82137e-15, 4.37114e-08, 1, 8.74228e-08, 1, -4.37114e-08, -1.63729e-07, 1.15431, -3.93851)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik6/Snap"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik3/Snap3"]
 transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
 shape = SubResource("SphereShape3D_vip75")
 
-[node name="Sprite3D" type="Sprite3D" parent="Sputnik6/Snap"]
+[node name="Sprite3D" type="Sprite3D" parent="Sputnik3/Snap3"]
 modulate = Color(1, 0, 0, 1)
 pixel_size = 0.0005
 billboard = 1
@@ -283,40 +374,14 @@ no_depth_test = true
 fixed_size = true
 texture = ExtResource("8_w3ica")
 
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik6/Snap"]
-
-[node name="RayCast3D" type="RayCast3D" parent="Sputnik6/Snap"]
-transform = Transform3D(2, -5.96059e-08, -1.16417e-10, 0, 2, 0, 0, 0, 2, 0, 0, 0)
-enabled = false
-
-[node name="Snap2" type="Area3D" parent="Sputnik6"]
-transform = Transform3D(-1, -8.74228e-08, 0, 8.74228e-08, -1, 0, 0, 0, 1, -4.76837e-07, 4.88075, -7.15256e-07)
-collision_layer = 2
-collision_mask = 2
-script = ExtResource("7_402tn")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik6/Snap2"]
-transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
-shape = SubResource("SphereShape3D_vip75")
-
-[node name="Sprite3D" type="Sprite3D" parent="Sputnik6/Snap2"]
-modulate = Color(1, 0, 0, 1)
-pixel_size = 0.0005
-billboard = 1
-no_depth_test = true
-fixed_size = true
-texture = ExtResource("8_w3ica")
-
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik6/Snap2"]
-
-[node name="RayCast3D" type="RayCast3D" parent="Sputnik6/Snap2"]
-transform = Transform3D(2, -5.96059e-08, -1.16417e-10, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+[node name="RayCast3D" type="RayCast3D" parent="Sputnik3/Snap3"]
 enabled = false
 
 [node name="Sputnik4" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.999999, 0, 3.45344, 2.38018)
+transform = Transform3D(-0.733918, -0.654221, -0.182647, -0.0876166, -0.17547, 0.980577, -0.673564, 0.735667, 0.0714599, -21.2917, -1.16611, 0)
+center_of_mass_mode = 1
 
-[node name="Sketchfab Model" type="MeshInstance3D" parent="Sputnik4"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Sputnik4"]
 mesh = SubResource("ArrayMesh_2q014")
 skeleton = NodePath("")
 
@@ -341,32 +406,20 @@ no_depth_test = true
 fixed_size = true
 texture = ExtResource("8_w3ica")
 
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik4/Snap"]
+[node name="RayCast3D" type="RayCast3D" parent="Sputnik4/Snap"]
+enabled = false
 
-[node name="Sputnik5" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.45344, 35.8198)
-mass = 100.0
-
-[node name="Sketchfab Model" type="MeshInstance3D" parent="Sputnik5"]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
-mesh = SubResource("ArrayMesh_2q014")
-skeleton = NodePath("")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik5"]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
-shape = SubResource("ConvexPolygonShape3D_k0rkw")
-
-[node name="Snap" type="Area3D" parent="Sputnik5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -19, 0)
+[node name="Snap2" type="Area3D" parent="Sputnik4"]
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 4.9, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik5/Snap"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik4/Snap2"]
 transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
 shape = SubResource("SphereShape3D_vip75")
 
-[node name="Sprite3D" type="Sprite3D" parent="Sputnik5/Snap"]
+[node name="Sprite3D" type="Sprite3D" parent="Sputnik4/Snap2"]
 modulate = Color(1, 0, 0, 1)
 pixel_size = 0.0005
 billboard = 1
@@ -374,19 +427,20 @@ no_depth_test = true
 fixed_size = true
 texture = ExtResource("8_w3ica")
 
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik5/Snap"]
+[node name="RayCast3D" type="RayCast3D" parent="Sputnik4/Snap2"]
+enabled = false
 
-[node name="Snap2" type="Area3D" parent="Sputnik5"]
-transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 24.6602, 0)
+[node name="Snap3" type="Area3D" parent="Sputnik4"]
+transform = Transform3D(-1, 8.74228e-08, 0, 3.82137e-15, 4.37114e-08, 1, 8.74228e-08, 1, -4.37114e-08, -1.63729e-07, 1.15431, -3.93851)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik5/Snap2"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik4/Snap3"]
 transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
 shape = SubResource("SphereShape3D_vip75")
 
-[node name="Sprite3D" type="Sprite3D" parent="Sputnik5/Snap2"]
+[node name="Sprite3D" type="Sprite3D" parent="Sputnik4/Snap3"]
 modulate = Color(1, 0, 0, 1)
 pixel_size = 0.0005
 billboard = 1
@@ -394,44 +448,5 @@ no_depth_test = true
 fixed_size = true
 texture = ExtResource("8_w3ica")
 
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik5/Snap2"]
-
-[node name="Snap3" type="Area3D" parent="Sputnik5"]
-transform = Transform3D(4.37114e-08, -1, -8.74228e-08, -1, -4.37114e-08, 0, -3.82137e-15, 8.74228e-08, -1, 19, 0, 0)
-collision_layer = 2
-collision_mask = 2
-script = ExtResource("7_402tn")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik5/Snap3"]
-transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
-shape = SubResource("SphereShape3D_vip75")
-
-[node name="Sprite3D" type="Sprite3D" parent="Sputnik5/Snap3"]
-modulate = Color(1, 0, 0, 1)
-pixel_size = 0.0005
-billboard = 1
-no_depth_test = true
-fixed_size = true
-texture = ExtResource("8_w3ica")
-
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik5/Snap3"]
-
-[node name="Snap4" type="Area3D" parent="Sputnik5"]
-transform = Transform3D(4.37114e-08, 1, 8.74228e-08, 1, -4.37114e-08, 0, 3.82137e-15, 8.74228e-08, -1, -19, 0, 0)
-collision_layer = 2
-collision_mask = 2
-script = ExtResource("7_402tn")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Sputnik5/Snap4"]
-transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
-shape = SubResource("SphereShape3D_vip75")
-
-[node name="Sprite3D" type="Sprite3D" parent="Sputnik5/Snap4"]
-modulate = Color(1, 0, 0, 1)
-pixel_size = 0.0005
-billboard = 1
-no_depth_test = true
-fixed_size = true
-texture = ExtResource("8_w3ica")
-
-[node name="Joint" type="Generic6DOFJoint3D" parent="Sputnik5/Snap4"]
+[node name="RayCast3D" type="RayCast3D" parent="Sputnik4/Snap3"]
+enabled = false

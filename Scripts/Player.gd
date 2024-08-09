@@ -19,16 +19,6 @@ func _process(_delta):
 	if $RayCast3D.get_collider():
 		text.text += $RayCast3D.get_collider().name
 
-func find_closest():
-	var closest : RigidBody3D
-	var d_min = INF
-	for close in $MatchingVelocity.get_overlapping_bodies():
-		var d = close.position.distance_squared_to(position)
-		if close != rb and d < d_min:
-			closest = close
-			d_min = d
-	return closest
-
 func _physics_process(_delta):
 	if input_translate():
 		rb.linear_damp = 0.0
@@ -55,30 +45,18 @@ func input_translate():
 	input.x = Input.get_action_strength("Right") - Input.get_action_strength("Left")
 	input.y = Input.get_action_strength("Up") - Input.get_action_strength("Down")
 	input.z = Input.get_action_strength("Back") - Input.get_action_strength("Forward")
-	rb.apply_central_force(THRUST * (global_basis * input))
+	rb.apply_central_force(global_basis * input * THRUST)
 	return input != Vector3.ZERO
-	
-func disconnect_from(path):
-	print(path)
-	if $Joint.node_b == path:
-		$Joint.node_a = ""
-		$Joint.node_b = ""
 	
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed():
 		if event.button_index == 1:
-			if $Joint.node_a:
-				disconnect_from($Joint.node_b)
+			if $Joint.node_b:
+				for child in get_node($Joint.node_b).get_children():
+					if child is Snap and not child.bound:
+						child.try_snapping()
+				$Joint.node_a = ""
+				$Joint.node_b = ""
 			elif $RayCast3D.get_collider():
 				$Joint.node_a = rb.get_path()
 				$Joint.node_b = $RayCast3D.get_collider().get_path()
-				var children = $RayCast3D.get_collider().get_children()
-				for child in children:
-					if child.has_method("snap_to"):
-						child.snapping = true
-		elif event.button_index == 2:
-			if $RayCast3D.get_collider():
-				var children = $RayCast3D.get_collider().get_children()
-				for child in children:
-					if child.has_method("snap_to"):
-						child.disconnect_from(true)
