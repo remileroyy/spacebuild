@@ -16,8 +16,6 @@ func _ready():
 
 func _process(_delta):
 	text.text = "%.2f\n" % rb.linear_velocity.length()
-	if $RayCast3D.get_collider():
-		text.text += $RayCast3D.get_collider().name
 
 func _physics_process(_delta):
 	if input_translate():
@@ -53,10 +51,15 @@ func _input(event):
 		if event.button_index == 1:
 			if $Joint.node_b:
 				for child in get_node($Joint.node_b).get_children():
-					if child is Snap and not child.bound:
-						child.try_snapping()
+					if child is Snap and not child.connected_to:
+						child.attach()
 				$Joint.node_a = ""
 				$Joint.node_b = ""
-			elif $RayCast3D.get_collider():
+			elif $BodyRaycast.get_collider():
 				$Joint.node_a = rb.get_path()
-				$Joint.node_b = $RayCast3D.get_collider().get_path()
+				$Joint.node_b = $BodyRaycast.get_collider().get_path()
+		elif event.button_index == 2:
+			if $AreaRaycast.get_collider():
+				if $AreaRaycast.get_collider() is Snap and $AreaRaycast.get_collider().connected_to:
+					$AreaRaycast.get_collider().detach()
+			

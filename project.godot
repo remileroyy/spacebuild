@@ -81,7 +81,6 @@ Space={
 
 3d_physics/layer_1="Bodies"
 3d_physics/layer_2="Snap"
-3d_physics/layer_3="Matching Velocity"
 
 [physics]
 

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="1_yukp5"]
 [ext_resource type="Texture2D" uid="uid://dxig7c1a2oy31" path="res://Assets/cross.svg" id="2_tmhqi"]
 [ext_resource type="Shader" path="res://Scripts/shader.gdshader" id="3_lt5no"]
-[ext_resource type="Texture2D" uid="uid://beu0cvtq0lufk" path="res://Assets/panorama_image_grey.png" id="4_ru5ty"]
+[ext_resource type="Texture2D" uid="uid://c82wsmn87t0yr" path="res://Assets/sky_grey_ring.png" id="4_c78u3"]
 [ext_resource type="Script" path="res://Scripts/Crosshair.gd" id="5_ntoww"]
 [ext_resource type="Script" path="res://Scripts/Snap.gd" id="7_402tn"]
 [ext_resource type="Texture2D" uid="uid://dmpjsb57qmark" path="res://Assets/Sputnik_ProbodobodyneStayputnik_mat_baseColor.png" id="7_kmqt2"]
@@ -18,7 +18,7 @@ shader_parameter/contrast = 2.0
 shader_parameter/greyscale = false
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_n2if7"]
-panorama = ExtResource("4_ru5ty")
+panorama = ExtResource("4_c78u3")
 
 [sub_resource type="Sky" id="Sky_58ame"]
 sky_material = SubResource("PanoramaSkyMaterial_n2if7")
@@ -143,8 +143,14 @@ THRUST = 100.0
 TORQUE = 100.0
 text = NodePath("../../GUI/Text")
 
-[node name="RayCast3D" type="RayCast3D" parent="PlayerSputnik/Player"]
+[node name="BodyRaycast" type="RayCast3D" parent="PlayerSputnik/Player"]
 target_position = Vector3(0, 0, -10)
+
+[node name="AreaRaycast" type="RayCast3D" parent="PlayerSputnik/Player"]
+target_position = Vector3(0, 0, -10)
+collision_mask = 2
+collide_with_areas = true
+collide_with_bodies = false
 
 [node name="Joint" type="Generic6DOFJoint3D" parent="PlayerSputnik/Player"]
 
@@ -156,7 +162,7 @@ skeleton = NodePath("")
 shape = SubResource("ConvexPolygonShape3D_k0rkw")
 
 [node name="Sputnik1" type="RigidBody3D" parent="."]
-transform = Transform3D(0.708303, 0.705909, 0, -0.705909, 0.708303, 0, 0, 0, 0.999999, 9.12656, 0, 0)
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 0.999999, -9.35091, 2.61114, 0)
 center_of_mass_mode = 1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Sputnik1"]
@@ -167,7 +173,7 @@ skeleton = NodePath("")
 shape = SubResource("ConvexPolygonShape3D_k0rkw")
 
 [node name="Snap" type="Area3D" parent="Sputnik1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.76837e-07, -3.8, -7.15256e-07)
+transform = Transform3D(1, -2.13163e-14, 0, 2.13163e-14, 1, 0, 0, 0, 1, 2.84217e-14, -3.9, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -188,7 +194,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Snap2" type="Area3D" parent="Sputnik1"]
-transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 4.9, 0)
+transform = Transform3D(1, -8.74228e-08, -3.82137e-15, -8.74228e-08, -1, -8.74228e-08, 3.82137e-15, 8.74228e-08, -1, 0, 4.9, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -209,7 +215,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Snap3" type="Area3D" parent="Sputnik1"]
-transform = Transform3D(-1, 8.74228e-08, 0, 3.82137e-15, 4.37114e-08, 1, 8.74228e-08, 1, -4.37114e-08, -1.63729e-07, 1.15431, -3.93851)
+transform = Transform3D(-4.37115e-08, -1, 0, 1, -4.37115e-08, 0, 0, 0, 1, 4, 1, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -230,7 +236,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Sputnik2" type="RigidBody3D" parent="."]
-transform = Transform3D(-0.553568, 0.429113, -0.713739, 0.612659, 0.790348, -2.3778e-08, 0.564103, -0.437279, -0.70041, -7.14467, 6.39327, 0)
+transform = Transform3D(-0.759794, 0.650165, 0, -0.650165, -0.759794, 0, 0, 0, 0.999999, 9.76059, 2.61114, 0)
 center_of_mass_mode = 1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Sputnik2"]
@@ -241,7 +247,7 @@ skeleton = NodePath("")
 shape = SubResource("ConvexPolygonShape3D_k0rkw")
 
 [node name="Snap" type="Area3D" parent="Sputnik2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.76837e-07, -3.8, -7.15256e-07)
+transform = Transform3D(1, -2.13163e-14, 0, 2.13163e-14, 1, 0, 0, 0, 1, 2.84217e-14, -3.9, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -262,7 +268,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Snap2" type="Area3D" parent="Sputnik2"]
-transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 4.9, 0)
+transform = Transform3D(1, -8.74228e-08, -3.82137e-15, -8.74228e-08, -1, -8.74228e-08, 3.82137e-15, 8.74228e-08, -1, 0, 4.9, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -283,7 +289,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Snap3" type="Area3D" parent="Sputnik2"]
-transform = Transform3D(-1, 8.74228e-08, 0, 3.82137e-15, 4.37114e-08, 1, 8.74228e-08, 1, -4.37114e-08, -1.63729e-07, 1.15431, -3.93851)
+transform = Transform3D(-4.37115e-08, -1, 0, 1, -4.37115e-08, 0, 0, 0, 1, 4, 1, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -304,7 +310,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Sputnik3" type="RigidBody3D" parent="."]
-transform = Transform3D(-0.733918, -0.654221, -0.182647, -0.378356, 0.617076, -0.689973, 0.564102, -0.437279, -0.70041, 9.7835, 11.7328, 0)
+transform = Transform3D(-0.461723, 0.395102, 0.79417, -0.650165, -0.759794, 0, 0.603406, -0.516342, 0.607694, 1.65952, 17.1032, 0)
 center_of_mass_mode = 1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Sputnik3"]
@@ -315,7 +321,7 @@ skeleton = NodePath("")
 shape = SubResource("ConvexPolygonShape3D_k0rkw")
 
 [node name="Snap" type="Area3D" parent="Sputnik3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.76837e-07, -3.8, -7.15256e-07)
+transform = Transform3D(1, -2.13163e-14, 0, 2.13163e-14, 1, 0, 0, 0, 1, 2.84217e-14, -3.9, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -336,7 +342,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Snap2" type="Area3D" parent="Sputnik3"]
-transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 4.9, 0)
+transform = Transform3D(1, -8.74228e-08, -3.82137e-15, -8.74228e-08, -1, -8.74228e-08, 3.82137e-15, 8.74228e-08, -1, 0, 4.9, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -357,7 +363,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Snap3" type="Area3D" parent="Sputnik3"]
-transform = Transform3D(-1, 8.74228e-08, 0, 3.82137e-15, 4.37114e-08, 1, 8.74228e-08, 1, -4.37114e-08, -1.63729e-07, 1.15431, -3.93851)
+transform = Transform3D(-4.37115e-08, -1, 0, 1, -4.37115e-08, 0, 0, 0, 1, 4, 1, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -378,7 +384,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Sputnik4" type="RigidBody3D" parent="."]
-transform = Transform3D(-0.733918, -0.654221, -0.182647, -0.0876166, -0.17547, 0.980577, -0.673564, 0.735667, 0.0714599, -21.2917, -1.16611, 0)
+transform = Transform3D(0.380517, -0.325613, -0.865553, -0.650165, -0.759794, -1.81107e-08, -0.657642, 0.562753, -0.500816, 1.65952, 0.799175, 19.6314)
 center_of_mass_mode = 1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Sputnik4"]
@@ -389,7 +395,7 @@ skeleton = NodePath("")
 shape = SubResource("ConvexPolygonShape3D_k0rkw")
 
 [node name="Snap" type="Area3D" parent="Sputnik4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.76837e-07, -3.8, -7.15256e-07)
+transform = Transform3D(1, -2.13163e-14, 0, 2.13163e-14, 1, 0, 0, 0, 1, 2.84217e-14, -3.9, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -410,7 +416,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Snap2" type="Area3D" parent="Sputnik4"]
-transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 4.9, 0)
+transform = Transform3D(1, -8.74228e-08, -3.82137e-15, -8.74228e-08, -1, -8.74228e-08, 3.82137e-15, 8.74228e-08, -1, 0, 4.9, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
@@ -431,7 +437,7 @@ texture = ExtResource("8_w3ica")
 enabled = false
 
 [node name="Snap3" type="Area3D" parent="Sputnik4"]
-transform = Transform3D(-1, 8.74228e-08, 0, 3.82137e-15, 4.37114e-08, 1, 8.74228e-08, 1, -4.37114e-08, -1.63729e-07, 1.15431, -3.93851)
+transform = Transform3D(-4.37115e-08, -1, 0, 1, -4.37115e-08, 0, 0, 0, 1, 4, 1, 0)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("7_402tn")
