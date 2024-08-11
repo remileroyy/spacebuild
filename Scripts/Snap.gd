@@ -54,8 +54,8 @@ func update_mass_com(rb: RigidBody3D):
 	var com = Vector3.ZERO
 	for child in rb.get_children():
 		if child is MeshInstance3D:
-			mass += ModuleData.MASS[child.mesh.resource_name]
-			com += ModuleData.MASS[child.mesh.resource_name] * child.position
+			mass += Parts.Mass[child.mesh.resource_name]
+			com += Parts.Mass[child.mesh.resource_name] * child.position
 	rb.mass = mass
 	rb.center_of_mass = com / mass
 	
