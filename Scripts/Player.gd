@@ -12,16 +12,24 @@ var matching_velocity_with : RigidBody3D
 
 func _ready():
 	rb = self.get_parent() as RigidBody3D
-	rb.angular_damp = 1.0
 
 func _process(_delta):
 	text.text = "%.2f\n" % rb.linear_velocity.length()
+	if $BodyRaycast.get_collider():
+		$"../../GUI/Joystick".dotColor = Color.GREEN
+	else:
+		$"../../GUI/Joystick".dotColor = Color.WHITE
 
 func _physics_process(_delta):
 	if input_translate():
 		rb.linear_damp = 0.0
 	else:
 		rb.linear_damp = 1.0
+	if Input.is_action_pressed("Space"):
+		rb.linear_damp = 5.0
+		rb.angular_damp = 5.0
+	else:
+		rb.angular_damp = 1.0
 	input_rotate()
 
 func input_rotate():

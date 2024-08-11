@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://bubuyl0c2m2e0"]
+
+[ext_resource type="Script" path="res://Scripts/Snap.gd" id="1_43kwg"]
+[ext_resource type="Texture2D" uid="uid://bg4ovm8mw1hpa" path="res://Assets/Images/dot.svg" id="2_i7e10"]
+[ext_resource type="Script" path="res://Scripts/Toggle.gd" id="3_bgtoq"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vip75"]
+radius = 0.7
+
+[node name="Snap" type="Area3D"]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_43kwg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, -2.98029e-08, -2.98605e-08, 5.19706e-11, 1, 2.95695e-08, -2.97762e-08, 5.96046e-08, 1, 0, 0, 0)
+shape = SubResource("SphereShape3D_vip75")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+visible = false
+modulate = Color(1, 0, 0, 1)
+pixel_size = 0.0005
+billboard = 1
+no_depth_test = true
+fixed_size = true
+texture = ExtResource("2_i7e10")
+script = ExtResource("3_bgtoq")

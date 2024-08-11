@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://m2gew7x5tnab"
-path="res://.godot/imported/cube.glb-33ad036a538ac9c603083afda39c73cd.scn"
+uid="uid://gegv810cjv2c"
+path="res://.godot/imported/cylinder.glb-26f484e8d9fe91ac4fd83b0f4ce4e342.scn"
 
 [deps]
 
-source_file="res://Assets/Models/cube.glb"
-dest_files=["res://.godot/imported/cube.glb-33ad036a538ac9c603083afda39c73cd.scn"]
+source_file="res://Assets/Models/cylinder.glb"
+dest_files=["res://.godot/imported/cylinder.glb-26f484e8d9fe91ac4fd83b0f4ce4e342.scn"]
 
 [params]
 
@@ -31,7 +31,7 @@ animation/remove_immutable_tracks=true
 import_script/path=""
 _subresources={
 "nodes": {
-"PATH:Cube": {
+"PATH:Cylinder": {
 "generate/physics": true,
 "physics/body_type": 1
 }
