@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="1_0fdyc"]
 
-[node name="Player" type="Camera3D" groups=["Player"]]
+[node name="Player" type="Camera3D"]
 far = 20000.0
 script = ExtResource("1_0fdyc")
 

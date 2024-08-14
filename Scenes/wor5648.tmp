@@ -1,7 +1,6 @@
-[gd_scene load_steps=14 format=3 uid="uid://c4s01kqop3hhu"]
+[gd_scene load_steps=13 format=3 uid="uid://c4s01kqop3hhu"]
 
 [ext_resource type="Shader" path="res://Scripts/shader.gdshader" id="1_7hpao"]
-[ext_resource type="Script" path="res://Scripts/Parts.gd" id="1_yixqb"]
 [ext_resource type="Script" path="res://Scripts/Crosshair.gd" id="3_4w6je"]
 [ext_resource type="Texture2D" uid="uid://c82wsmn87t0yr" path="res://Assets/Images/sky_grey_ring.png" id="4_at40n"]
 [ext_resource type="PackedScene" uid="uid://o3u02d06e8q1" path="res://Scenes/player.tscn" id="4_xmber"]
@@ -61,7 +60,6 @@ shadow_mesh = SubResource("ArrayMesh_wa5f0")
 points = PackedVector3Array(-1, -1, -1, 1, 1, 1, 1, -1, 1, 1, 1, -1, -1, 1, 1, 1, -1, -1, -1, -1, 1, -1, 1, -1)
 
 [node name="World" type="Node3D"]
-script = ExtResource("1_yixqb")
 
 [node name="GUI" type="CanvasLayer" parent="."]
 
@@ -74,6 +72,19 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
+[node name="Text" type="RichTextLabel" parent="GUI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="Joystick" type="Control" parent="GUI"]
 layout_mode = 3
 anchors_preset = 8
@@ -85,24 +96,11 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_4w6je")
 
-[node name="Text" type="RichTextLabel" parent="GUI/Joystick"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -50.0
-offset_top = 25.0
-offset_right = 50.0
-offset_bottom = 125.0
-grow_horizontal = 2
-bbcode_enabled = true
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1q1mr")
 
 [node name="PlayerCube" type="RigidBody3D" parent="."]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -7.51407)
-collision_layer = 0
 mass = 100.0
 
 [node name="Cube" type="MeshInstance3D" parent="PlayerCube"]
@@ -115,4 +113,4 @@ shape = SubResource("ConvexPolygonShape3D_rxyyt")
 [node name="Player" parent="PlayerCube" node_paths=PackedStringArray("text") instance=ExtResource("4_xmber")]
 THRUST = 200.0
 TORQUE = 150.0
-text = NodePath("../../GUI/Joystick/Text")
+text = NodePath("../../GUI/Text")

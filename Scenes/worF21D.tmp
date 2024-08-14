@@ -1,9 +1,10 @@
-[gd_scene load_steps=14 format=3 uid="uid://c4s01kqop3hhu"]
+[gd_scene load_steps=15 format=3 uid="uid://c4s01kqop3hhu"]
 
 [ext_resource type="Shader" path="res://Scripts/shader.gdshader" id="1_7hpao"]
 [ext_resource type="Script" path="res://Scripts/Parts.gd" id="1_yixqb"]
 [ext_resource type="Script" path="res://Scripts/Crosshair.gd" id="3_4w6je"]
 [ext_resource type="Texture2D" uid="uid://c82wsmn87t0yr" path="res://Assets/Images/sky_grey_ring.png" id="4_at40n"]
+[ext_resource type="Texture2D" uid="uid://cu20hls6i1ili" path="res://Assets/Images/crosshair131.png" id="4_lhdes"]
 [ext_resource type="PackedScene" uid="uid://o3u02d06e8q1" path="res://Scenes/player.tscn" id="4_xmber"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ap7gf"]
@@ -85,15 +86,29 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_4w6je")
 
+[node name="TextureRect" type="TextureRect" parent="GUI/Joystick"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_lhdes")
+
 [node name="Text" type="RichTextLabel" parent="GUI/Joystick"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -50.0
-offset_top = 25.0
 offset_right = 50.0
-offset_bottom = 125.0
+offset_bottom = 100.0
 grow_horizontal = 2
 bbcode_enabled = true
 
