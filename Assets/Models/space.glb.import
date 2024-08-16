@@ -35,15 +35,15 @@ _subresources={
 "generate/physics": true,
 "physics/body_type": 1
 },
-"PATH:Cylinder": {
-"generate/physics": true,
-"physics/body_type": 1
-},
 "PATH:Engine": {
 "generate/physics": true,
 "physics/body_type": 1
 },
-"PATH:Icosphere": {
+"PATH:Power": {
+"generate/physics": true,
+"physics/body_type": 1
+},
+"PATH:Sphere": {
 "generate/physics": true,
 "physics/body_type": 1
 }

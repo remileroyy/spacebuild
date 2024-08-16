@@ -5,38 +5,40 @@ extends Camera3D
 @export_range(0.0, 1.0) var INNER_DEADZONE = 0.2
 @export_range(0.0, 1.0) var OUTER_DEADZONE = 0.8
 
-@export var text : RichTextLabel
-
-var rb : RigidBody3D
-var matching_velocity_with : RigidBody3D
+var rb : Construct
 var marker = preload("res://Scenes/marker.tscn")
 
 func _ready():
-	rb = self.get_parent() as RigidBody3D
+	rb = self.get_parent() as Construct
+	rb.linear_damp = 1.0
+	rb.angular_damp = 1.0
 	
 	
 func _process(_delta):
-	text.text = "[center]%.2f[/center]" % rb.linear_velocity.length()
+	$"../../GUI/Joystick/Text".text = "[center]%.2f[/center]" % rb.linear_velocity.length()
 	if $BodyRaycast.get_collider():
 		$"../../GUI/Joystick".dotColor = Color.GREEN
 	else:
 		$"../../GUI/Joystick".dotColor = Color.WHITE
+		
 	
 	
 func _physics_process(_delta):
-	if input_translate():
-		rb.linear_damp = 0.0
-	else:
-		rb.linear_damp = 1.0
-	if Input.is_action_pressed("Space"):
-		rb.linear_damp = 5.0
-		rb.angular_damp = 5.0
-	else:
-		rb.angular_damp = 1.0
-	input_rotate()
+	var trans = get_trans_input()
+	var rot = get_rot_input()
+	rb.linear_damp = 0.0 if trans.length() > 1e-1 else 1.0
+	rb.input_move(trans, rot)
 	
 	
-func input_rotate():
+func get_trans_input():
+	var trans_input = Vector3() 
+	trans_input.x = Input.get_action_strength("Right") - Input.get_action_strength("Left")
+	trans_input.y = Input.get_action_strength("Up") - Input.get_action_strength("Down")
+	trans_input.z = Input.get_action_strength("Back") - Input.get_action_strength("Forward")
+	return trans_input
+	
+	
+func get_rot_input():
 	var mouse = get_viewport().get_mouse_position()
 	var center = get_viewport().size * 0.5
 	mouse = (mouse - center) / center.y
@@ -44,20 +46,11 @@ func input_rotate():
 		mouse = mouse.normalized() * OUTER_DEADZONE
 	mouse = mouse.move_toward(Vector2.ZERO, INNER_DEADZONE)
 	mouse = mouse / (OUTER_DEADZONE - INNER_DEADZONE)
-	var input = Vector3()
-	input.x = -mouse.y
-	input.y = -mouse.x
-	input.z = Input.get_action_strength("Roll-") - Input.get_action_strength("Roll+")
-	rb.apply_torque(global_basis * input * TORQUE)
-	
-	
-func input_translate():
-	var input = Vector3() 
-	input.x = Input.get_action_strength("Right") - Input.get_action_strength("Left")
-	input.y = Input.get_action_strength("Up") - Input.get_action_strength("Down")
-	input.z = Input.get_action_strength("Back") - Input.get_action_strength("Forward")
-	rb.apply_central_force(global_basis * input * THRUST)
-	return input != Vector3.ZERO
+	var rot_input = Vector3()
+	rot_input.x = -mouse.y
+	rot_input.y = -mouse.x
+	rot_input.z = Input.get_action_strength("Roll-") - Input.get_action_strength("Roll+")
+	return rot_input
 	
 	
 func _input(event):

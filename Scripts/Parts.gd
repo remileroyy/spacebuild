@@ -1,26 +1,17 @@
 extends Node3D
 class_name Parts
 
-static var parts = {}
+const scene: PackedScene = preload("res://Scenes/parts.tscn")
+var parts: Array[Node]
 
 func _ready():
-	load_parts("res://Scenes/Parts/")
+	parts = scene.instantiate().get_child(0).get_children()
 	
 	
 func _input(event):
 	if event is InputEventKey and event.is_pressed():
-		if 48 < event.physical_keycode and event.physical_keycode < 58:
-			var key = parts.keys()[(event.physical_keycode - 49) % len(parts)]
-			var instance = parts[key]["scene"].instantiate()
+		if 48 < event.physical_keycode and event.physical_keycode < 59:
+			var instance = parts[(event.physical_keycode - 49) % len(parts)].duplicate() as RigidBody3D
+			instance.visible = true
+			instance.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 			add_child(instance)
-	
-	
-func load_parts(path):
-	var dir = DirAccess.open(path)
-	dir.list_dir_begin()
-	var file_name = dir.get_next()
-	while file_name != "":
-		parts[file_name] = {}
-		parts[file_name]["scene"] = load(path + file_name)
-		parts[file_name]["mass"] = 1.0
-		file_name = dir.get_next()

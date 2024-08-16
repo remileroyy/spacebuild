@@ -6,7 +6,7 @@ func _init():
 	create_material("b", Color(0, 0, 1))
 
 func _has_gizmo(node):
-	return node is Snap
+	return node is Snap or node is Thrust
 	
 func _redraw(gizmo):
 	gizmo.clear()

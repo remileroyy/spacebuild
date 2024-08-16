@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://bubuyl0c2m2e0"]
 
 [ext_resource type="Script" path="res://Scripts/Snap.gd" id="1_43kwg"]
-[ext_resource type="Texture2D" uid="uid://diulakgwgr0qi" path="res://Assets/Images/crosshair037.png" id="2_ilbh8"]
-[ext_resource type="Script" path="res://Scripts/Toggle.gd" id="3_bgtoq"]
+[ext_resource type="Texture2D" uid="uid://cjmstsouv6b4g" path="res://Assets/Images/crosshair002.png" id="2_tk6gg"]
+[ext_resource type="Script" path="res://Scripts/UI/Toggle.gd" id="3_bgtoq"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_vip75"]
 
@@ -18,9 +18,8 @@ shape = SubResource("SphereShape3D_vip75")
 [node name="Sprite3D" type="Sprite3D" parent="."]
 visible = false
 modulate = Color(1, 0, 0, 1)
-pixel_size = 0.001
+pixel_size = 0.005
 billboard = 1
 no_depth_test = true
-fixed_size = true
-texture = ExtResource("2_ilbh8")
+texture = ExtResource("2_tk6gg")
 script = ExtResource("3_bgtoq")
