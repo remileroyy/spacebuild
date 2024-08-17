@@ -164,6 +164,7 @@ shape = SubResource("ConvexPolygonShape3D_bukwo")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="Thrust" parent="simplest/Engine" instance=ExtResource("2_05j66")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 
 [node name="Cylinder" type="RigidBody3D" parent="simplest"]
 

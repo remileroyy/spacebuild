@@ -44,20 +44,20 @@ func detach():
 	get_tree().root.get_child(0).add_child(rb)
 	for child in get_all_connected():
 		child.reparent(rb)
-	update_mass_and_com(rb)
-	update_mass_and_com(other_rb)
+	Snap.update_mass_and_com(rb)
+	Snap.update_mass_and_com(other_rb)
 	
 	
 func merge_with(other: Snap):
 	get_parent().queue_free()
 	for child in get_parent().get_children():
 		child.reparent(other.get_parent())
-	update_mass_and_com(get_parent())
+	Snap.update_mass_and_com(get_parent())
 	connected_to = other
 	connected_to.connected_to = self
 	
 	
-func update_mass_and_com(rb: RigidBody3D):
+static func update_mass_and_com(rb: RigidBody3D):
 	var mass = 0.0
 	var com = Vector3.ZERO
 	for child in rb.get_children():
@@ -73,8 +73,6 @@ func _process(_delta):
 		$Sprite3D.visible = true
 	elif Input.is_action_just_released("Tab"):
 		$Sprite3D.visible = false
-	elif Input.is_action_just_released("Space"):
-		attach()
 	
 	
 func snap_to(other: Snap):

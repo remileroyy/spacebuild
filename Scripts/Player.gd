@@ -11,33 +11,35 @@ var marker = preload("res://Scenes/marker.tscn")
 func _ready():
 	get_parent().linear_damp = 1.0
 	get_parent().angular_damp = 1.0
+	Snap.update_mass_and_com(get_parent())
 	
 	
 func _process(_delta):
-	$"../../GUI/Joystick/Text".text = "[center]%.2f[/center]" % get_parent().linear_velocity.length()
+	$"../../GUI/Crosshair/Text".text = "[center]%.2f[/center]" % get_parent().linear_velocity.length()
 	if $BodyRaycast.get_collider():
-		$"../../GUI/Joystick".dotColor = Color.GREEN
+		$"../../GUI/Crosshair".dotColor = Color.GREEN
 	else:
-		$"../../GUI/Joystick".dotColor = Color.WHITE
+		$"../../GUI/Crosshair".dotColor = Color.WHITE
 		
-	
-	
+		
 func _physics_process(_delta):
-	var trans = get_trans_input()
-	var rot = get_rot_input()
-	get_parent().linear_damp = 0.0 if trans.length() > 1e-1 else 1.0
-	input_move(trans, rot)
+	var linear = get_linear_input()
+	var angular = get_angular_input()
+	get_parent().linear_damp = 0.0 if linear.length() > 1e-1 else 1.0
+	for thrust in get_parent().get_children():
+		if thrust is Thrust:
+			thrust.apply_thrust(linear, angular)
 	
 	
-func get_trans_input():
-	var trans_input = Vector3() 
-	trans_input.x = Input.get_action_strength("Right") - Input.get_action_strength("Left")
-	trans_input.y = Input.get_action_strength("Up") - Input.get_action_strength("Down")
-	trans_input.z = Input.get_action_strength("Back") - Input.get_action_strength("Forward")
-	return trans_input
+func get_linear_input():
+	var linear = Vector3() 
+	linear.x = Input.get_action_strength("Right") - Input.get_action_strength("Left")
+	linear.y = Input.get_action_strength("Up") - Input.get_action_strength("Down")
+	linear.z = Input.get_action_strength("Back") - Input.get_action_strength("Forward")
+	return linear
 	
 	
-func get_rot_input():
+func get_angular_input():
 	var mouse = get_viewport().get_mouse_position()
 	var center = get_viewport().size * 0.5
 	mouse = (mouse - center) / center.y
@@ -45,25 +47,11 @@ func get_rot_input():
 		mouse = mouse.normalized() * OUTER_DEADZONE
 	mouse = mouse.move_toward(Vector2.ZERO, INNER_DEADZONE)
 	mouse = mouse / (OUTER_DEADZONE - INNER_DEADZONE)
-	var rot_input = Vector3()
-	rot_input.x = -mouse.y
-	rot_input.y = -mouse.x
-	rot_input.z = Input.get_action_strength("Roll-") - Input.get_action_strength("Roll+")
-	return rot_input
-	
-	
-func input_move(trans, rot):
-	for thrust in get_parent().get_children():
-		if thrust is Thrust:
-			thrust.modulate = Color.RED
-			var linear = thrust.basis.y.dot(trans)
-			var angular = (thrust.position - get_parent().center_of_mass).cross(thrust.basis.y).dot(rot)
-			if linear > 1e-1:
-				thrust.modulate = Color.GREEN
-				get_parent().apply_force(get_parent().basis * (thrust.basis.y * linear * thrust.force), get_parent().center_of_mass + get_parent().basis * thrust.position)
-			elif angular > 1e-1:
-				thrust.modulate = Color.GREEN
-				get_parent().apply_force(get_parent().basis * (thrust.basis.y * angular * thrust.force), get_parent().center_of_mass + get_parent().basis * thrust.position)
+	var angular = Vector3()
+	angular.x = -mouse.y
+	angular.y = -mouse.x
+	angular.z = Input.get_action_strength("Roll-") - Input.get_action_strength("Roll+")
+	return angular
 	
 	
 func _input(event):
