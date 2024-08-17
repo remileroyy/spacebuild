@@ -68,6 +68,15 @@ func update_mass_and_com(rb: RigidBody3D):
 	rb.center_of_mass = com / mass
 	
 	
+func _process(_delta):
+	if Input.is_action_just_pressed("Tab"):
+		$Sprite3D.visible = true
+	elif Input.is_action_just_released("Tab"):
+		$Sprite3D.visible = false
+	elif Input.is_action_just_released("Space"):
+		attach()
+	
+	
 func snap_to(other: Snap):
 	get_parent().global_basis = other.global_basis * Basis.FLIP_Y * basis.inverse()
 	get_parent().global_position = other.global_position - get_parent().global_basis * position

@@ -13,15 +13,15 @@ func _redraw(gizmo):
 	var node = gizmo.get_node_3d()
 	var lines = PackedVector3Array()
 	lines.push_back(Vector3(0, 0, 0))
-	lines.push_back(Vector3(1, 0, 0))
+	lines.push_back(Vector3(3, 0, 0))
 	gizmo.add_lines(lines, get_material("r", gizmo), false)
 	lines = PackedVector3Array()
 	lines.push_back(Vector3(0, 0, 0))
-	lines.push_back(Vector3(0, 1, 0))
+	lines.push_back(Vector3(0, 3, 0))
 	gizmo.add_lines(lines, get_material("g", gizmo), false)
 	lines = PackedVector3Array()
 	lines.push_back(Vector3(0, 0, 0))
-	lines.push_back(Vector3(0, 0, 1))
+	lines.push_back(Vector3(0, 0, 3))
 	gizmo.add_lines(lines, get_material("b", gizmo), false)
 
 func _get_gizmo_name():

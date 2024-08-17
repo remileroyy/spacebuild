@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bph3nqe6gyt72"
-path="res://.godot/imported/space.glb-a60476c342e9ad1306726187c017ffa0.scn"
+uid="uid://bqn0wwavg26fq"
+path="res://.godot/imported/simplest.glb-67998cb0df6b3e70622fd964504e30da.scn"
 
 [deps]
 
-source_file="res://Assets/Models/space.glb"
-dest_files=["res://.godot/imported/space.glb-a60476c342e9ad1306726187c017ffa0.scn"]
+source_file="res://Assets/Models/simplest.glb"
+dest_files=["res://.godot/imported/simplest.glb-67998cb0df6b3e70622fd964504e30da.scn"]
 
 [params]
 
@@ -33,19 +33,18 @@ _subresources={
 "nodes": {
 "PATH:Cube": {
 "generate/physics": true,
-"physics/body_type": 1
+"physics/body_type": 1,
+"physics/shape_type": 1
+},
+"PATH:Cylinder": {
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/shape_type": 1
 },
 "PATH:Engine": {
 "generate/physics": true,
-"physics/body_type": 1
-},
-"PATH:Power": {
-"generate/physics": true,
-"physics/body_type": 1
-},
-"PATH:Sphere": {
-"generate/physics": true,
-"physics/body_type": 1
+"physics/body_type": 1,
+"physics/shape_type": 1
 }
 }
 }

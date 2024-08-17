@@ -1,7 +1,32 @@
-[gd_scene load_steps=13 format=3 uid="uid://bt6k2qp1vmefr"]
+[gd_scene load_steps=23 format=3 uid="uid://c4s01kqop3hhu"]
 
-[ext_resource type="PackedScene" uid="uid://bubuyl0c2m2e0" path="res://Scenes/snap.tscn" id="1_6qn61"]
-[ext_resource type="PackedScene" uid="uid://dqbty3nmh21qq" path="res://Scenes/thrust.tscn" id="2_05j66"]
+[ext_resource type="Shader" path="res://Scripts/UI/shader.gdshader" id="1_7hpao"]
+[ext_resource type="Script" path="res://Scripts/Parts.gd" id="1_yixqb"]
+[ext_resource type="Script" path="res://Scripts/UI/Crosshair.gd" id="3_4w6je"]
+[ext_resource type="Texture2D" uid="uid://c82wsmn87t0yr" path="res://Assets/Images/sky_grey_ring.png" id="4_at40n"]
+[ext_resource type="Script" path="res://Scripts/Construct.gd" id="5_tm0fm"]
+[ext_resource type="PackedScene" uid="uid://o3u02d06e8q1" path="res://Scenes/player.tscn" id="6_uelb4"]
+[ext_resource type="PackedScene" uid="uid://bubuyl0c2m2e0" path="res://Scenes/snap.tscn" id="7_0cicx"]
+[ext_resource type="PackedScene" uid="uid://dqbty3nmh21qq" path="res://Scenes/thrust.tscn" id="7_5mqgg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ap7gf"]
+shader = ExtResource("1_7hpao")
+shader_parameter/static_noise_intensity = 0.2
+shader_parameter/vignette_intensity = 0.2
+shader_parameter/scanline_count = 200.0
+shader_parameter/contrast = 2.0
+shader_parameter/greyscale = false
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_n2if7"]
+panorama = ExtResource("4_at40n")
+
+[sub_resource type="Sky" id="Sky_58ame"]
+sky_material = SubResource("PanoramaSkyMaterial_n2if7")
+
+[sub_resource type="Environment" id="Environment_1q1mr"]
+background_mode = 2
+background_energy_multiplier = 5.0
+sky = SubResource("Sky_58ame")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ssyvi"]
 resource_name = "Material"
@@ -120,62 +145,264 @@ shadow_mesh = SubResource("ArrayMesh_2pn07")
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i3ruj"]
 points = PackedVector3Array(1, 2, 0, 0.706734, 2, -0.707126, 0.706734, 2, 0.706734, 1.41386, 1.3332, 1.41386, 2, 1.3332, 0, 1.41386, 1.3332, -1.41425, 0, 2, -1, 0, 2, 1, 1.41386, -1.33359, 1.41386, 0, 1.3332, 2, 2, -1.33359, 0, 1.41386, -1.33359, -1.41425, 0, 1.3332, -2, -0.707126, 2, -0.707126, -0.707126, 2, 0.706734, -1.41425, 1.3332, 1.41386, 0.706734, -2, 0.706734, 1, -2, 0, 0, -1.33359, 2, 0, -2, 1, 0.706734, -2, -0.707126, 0, -2, -1, 0, -1.33359, -2, -1.41425, 1.3332, -1.41425, -1, 2, 0, -2, 1.3332, 0, -1.41425, -1.33359, 1.41386, -0.707126, -2, 0.706734, -0.707126, -2, -0.707126, -1.41425, -1.33359, -1.41425, -2, -1.33359, 0, -1, -2, 0)
 
-[node name="Node3D" type="Node3D"]
+[node name="World" type="Node3D"]
+script = ExtResource("1_yixqb")
 
-[node name="simplest" type="Node3D" parent="."]
+[node name="GUI" type="CanvasLayer" parent="."]
 
-[node name="Cube" type="RigidBody3D" parent="simplest"]
+[node name="Shader" type="ColorRect" parent="GUI"]
+material = SubResource("ShaderMaterial_ap7gf")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
 
-[node name="Cube" type="MeshInstance3D" parent="simplest/Cube"]
+[node name="Joystick" type="Control" parent="GUI"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_4w6je")
+
+[node name="Text" type="RichTextLabel" parent="GUI/Joystick"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -50.0
+offset_top = 25.0
+offset_right = 50.0
+offset_bottom = 125.0
+grow_horizontal = 2
+bbcode_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1q1mr")
+
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.69661, 25.4989)
+
+[node name="simplest" type="Node3D" parent="Node3D"]
+
+[node name="Cube" type="RigidBody3D" parent="Node3D/simplest"]
+center_of_mass_mode = 1
+
+[node name="Cube" type="MeshInstance3D" parent="Node3D/simplest/Cube"]
 mesh = SubResource("ArrayMesh_05jqx")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="simplest/Cube"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/simplest/Cube"]
 shape = SubResource("ConvexPolygonShape3D_2ruo4")
 
-[node name="Snap" parent="simplest/Cube" instance=ExtResource("1_6qn61")]
+[node name="Snap" parent="Node3D/simplest/Cube" instance=ExtResource("7_0cicx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
-[node name="Snap2" parent="simplest/Cube" instance=ExtResource("1_6qn61")]
+[node name="Snap2" parent="Node3D/simplest/Cube" instance=ExtResource("7_0cicx")]
 transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 1, 0, 0)
 
-[node name="Snap3" parent="simplest/Cube" instance=ExtResource("1_6qn61")]
+[node name="Snap3" parent="Node3D/simplest/Cube" instance=ExtResource("7_0cicx")]
 transform = Transform3D(1.91069e-15, -4.37114e-08, -1, -1, -4.37114e-08, 0, -4.37114e-08, 1, -4.37114e-08, 0, 0, 1)
 
-[node name="Snap4" parent="simplest/Cube" instance=ExtResource("1_6qn61")]
+[node name="Snap4" parent="Node3D/simplest/Cube" instance=ExtResource("7_0cicx")]
 transform = Transform3D(4.37114e-08, -1, 8.74228e-08, -1, -4.37114e-08, 0, 3.82137e-15, -8.74228e-08, -1, -1, 0, 0)
 
-[node name="Snap5" parent="simplest/Cube" instance=ExtResource("1_6qn61")]
+[node name="Snap5" parent="Node3D/simplest/Cube" instance=ExtResource("7_0cicx")]
 transform = Transform3D(-5.73206e-15, 1.31134e-07, 1, -1, -4.37114e-08, 0, 4.37114e-08, -1, 1.31134e-07, 0, 0, -1)
 
-[node name="Snap6" parent="simplest/Cube" instance=ExtResource("1_6qn61")]
+[node name="Snap6" parent="Node3D/simplest/Cube" instance=ExtResource("7_0cicx")]
 transform = Transform3D(-5.73206e-15, 1.31134e-07, 1, 8.74228e-08, -1, 1.31134e-07, 1, 8.74228e-08, -5.73206e-15, 0, -1, 0)
 
-[node name="Engine" type="RigidBody3D" parent="simplest"]
+[node name="Engine" type="RigidBody3D" parent="Node3D/simplest"]
+center_of_mass_mode = 1
 
-[node name="Engine" type="MeshInstance3D" parent="simplest/Engine"]
+[node name="Engine" type="MeshInstance3D" parent="Node3D/simplest/Engine"]
 mesh = SubResource("ArrayMesh_a5jow")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="simplest/Engine"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/simplest/Engine"]
 shape = SubResource("ConvexPolygonShape3D_bukwo")
 
-[node name="Snap" parent="simplest/Engine" instance=ExtResource("1_6qn61")]
+[node name="Snap" parent="Node3D/simplest/Engine" instance=ExtResource("7_0cicx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
-[node name="Thrust" parent="simplest/Engine" instance=ExtResource("2_05j66")]
+[node name="Thrust" parent="Node3D/simplest/Engine" instance=ExtResource("7_5mqgg")]
 
-[node name="Cylinder" type="RigidBody3D" parent="simplest"]
+[node name="Cylinder" type="RigidBody3D" parent="Node3D/simplest"]
+center_of_mass_mode = 1
 
-[node name="Cylinder" type="MeshInstance3D" parent="simplest/Cylinder"]
+[node name="Cylinder" type="MeshInstance3D" parent="Node3D/simplest/Cylinder"]
 mesh = SubResource("ArrayMesh_dqqad")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="simplest/Cylinder"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/simplest/Cylinder"]
 shape = SubResource("ConvexPolygonShape3D_i3ruj")
 
-[node name="Snap" parent="simplest/Cylinder" instance=ExtResource("1_6qn61")]
+[node name="Snap" parent="Node3D/simplest/Cylinder" instance=ExtResource("7_0cicx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
-[node name="Snap2" parent="simplest/Cylinder" instance=ExtResource("1_6qn61")]
+[node name="Snap2" parent="Node3D/simplest/Cylinder" instance=ExtResource("7_0cicx")]
 transform = Transform3D(-1, -8.74228e-08, 0, 8.74228e-08, -1, 0, 0, 0, 1, 0, -2, 0)
+
+[node name="Cube" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.23908)
+center_of_mass_mode = 1
+script = ExtResource("5_tm0fm")
+
+[node name="Cube" type="MeshInstance3D" parent="Cube"]
+mesh = SubResource("ArrayMesh_05jqx")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube"]
+shape = SubResource("ConvexPolygonShape3D_2ruo4")
+
+[node name="Snap" parent="Cube" instance=ExtResource("7_0cicx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Snap2" parent="Cube" instance=ExtResource("7_0cicx")]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 1, 0, 0)
+
+[node name="Snap3" parent="Cube" instance=ExtResource("7_0cicx")]
+transform = Transform3D(1.91069e-15, -4.37114e-08, -1, -1, -4.37114e-08, 0, -4.37114e-08, 1, -4.37114e-08, 0, 0, 1)
+
+[node name="Snap4" parent="Cube" instance=ExtResource("7_0cicx")]
+transform = Transform3D(4.37114e-08, -1, 8.74228e-08, -1, -4.37114e-08, 0, 3.82137e-15, -8.74228e-08, -1, -1, 0, 0)
+
+[node name="Snap5" parent="Cube" instance=ExtResource("7_0cicx")]
+transform = Transform3D(-5.73206e-15, 1.31134e-07, 1, -1, -4.37114e-08, 0, 4.37114e-08, -1, 1.31134e-07, 0, 0, -1)
+
+[node name="Snap6" parent="Cube" instance=ExtResource("7_0cicx")]
+transform = Transform3D(-5.73206e-15, 1.31134e-07, 1, 8.74228e-08, -1, 1.31134e-07, 1, 8.74228e-08, -5.73206e-15, 0, -1, 0)
+
+[node name="Player" parent="Cube" instance=ExtResource("6_uelb4")]
+transform = Transform3D(1, -5.29396e-22, -3.55271e-15, 1.77636e-15, 0.866025, 0.5, 3.07674e-15, -0.5, 0.866026, 0, 3, 5)
+
+[node name="Cube2" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.23908)
+center_of_mass_mode = 1
+
+[node name="Cube" type="MeshInstance3D" parent="Cube2"]
+mesh = SubResource("ArrayMesh_05jqx")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube2"]
+shape = SubResource("ConvexPolygonShape3D_2ruo4")
+
+[node name="Snap" parent="Cube2" instance=ExtResource("7_0cicx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Snap2" parent="Cube2" instance=ExtResource("7_0cicx")]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 1, 0, 0)
+
+[node name="Snap3" parent="Cube2" instance=ExtResource("7_0cicx")]
+transform = Transform3D(1.91069e-15, -4.37114e-08, -1, -1, -4.37114e-08, 0, -4.37114e-08, 1, -4.37114e-08, 0, 0, 1)
+
+[node name="Snap4" parent="Cube2" instance=ExtResource("7_0cicx")]
+transform = Transform3D(4.37114e-08, -1, 8.74228e-08, -1, -4.37114e-08, 0, 3.82137e-15, -8.74228e-08, -1, -1, 0, 0)
+
+[node name="Snap5" parent="Cube2" instance=ExtResource("7_0cicx")]
+transform = Transform3D(-5.73206e-15, 1.31134e-07, 1, -1, -4.37114e-08, 0, 4.37114e-08, -1, 1.31134e-07, 0, 0, -1)
+
+[node name="Snap6" parent="Cube2" instance=ExtResource("7_0cicx")]
+transform = Transform3D(-5.73206e-15, 1.31134e-07, 1, 8.74228e-08, -1, 1.31134e-07, 1, 8.74228e-08, -5.73206e-15, 0, -1, 0)
+
+[node name="Engine" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 7.73604)
+center_of_mass_mode = 1
+
+[node name="Engine" type="MeshInstance3D" parent="Engine"]
+mesh = SubResource("ArrayMesh_a5jow")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Engine"]
+shape = SubResource("ConvexPolygonShape3D_bukwo")
+
+[node name="Snap" parent="Engine" instance=ExtResource("7_0cicx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Thrust" parent="Engine" instance=ExtResource("7_5mqgg")]
+
+[node name="Engine2" type="RigidBody3D" parent="."]
+transform = Transform3D(-1, -8.74228e-08, -3.82137e-15, 0, -4.37114e-08, 1, -8.74228e-08, 1, 4.37114e-08, 0, 0, 0.91014)
+center_of_mass_mode = 1
+
+[node name="Engine" type="MeshInstance3D" parent="Engine2"]
+mesh = SubResource("ArrayMesh_a5jow")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Engine2"]
+shape = SubResource("ConvexPolygonShape3D_bukwo")
+
+[node name="Snap" parent="Engine2" instance=ExtResource("7_0cicx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Thrust" parent="Engine2" instance=ExtResource("7_5mqgg")]
+
+[node name="Engine3" type="RigidBody3D" parent="."]
+transform = Transform3D(1.31134e-07, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, -1.31134e-07, -5.73206e-15, 2.16227, 0, 2.91014)
+center_of_mass_mode = 1
+
+[node name="Engine" type="MeshInstance3D" parent="Engine3"]
+mesh = SubResource("ArrayMesh_a5jow")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Engine3"]
+shape = SubResource("ConvexPolygonShape3D_bukwo")
+
+[node name="Snap" parent="Engine3" instance=ExtResource("7_0cicx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Thrust" parent="Engine3" instance=ExtResource("7_5mqgg")]
+
+[node name="Engine4" type="RigidBody3D" parent="."]
+transform = Transform3D(1.31134e-07, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, -1.31134e-07, -5.73206e-15, 2.16227, 0, 5.20861)
+center_of_mass_mode = 1
+
+[node name="Engine" type="MeshInstance3D" parent="Engine4"]
+mesh = SubResource("ArrayMesh_a5jow")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Engine4"]
+shape = SubResource("ConvexPolygonShape3D_bukwo")
+
+[node name="Snap" parent="Engine4" instance=ExtResource("7_0cicx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Thrust" parent="Engine4" instance=ExtResource("7_5mqgg")]
+
+[node name="Engine5" type="RigidBody3D" parent="."]
+transform = Transform3D(-2.18557e-07, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 2.18557e-07, 9.55343e-15, -2.32125, 0, 5.20861)
+center_of_mass_mode = 1
+
+[node name="Engine" type="MeshInstance3D" parent="Engine5"]
+mesh = SubResource("ArrayMesh_a5jow")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Engine5"]
+shape = SubResource("ConvexPolygonShape3D_bukwo")
+
+[node name="Snap" parent="Engine5" instance=ExtResource("7_0cicx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Thrust" parent="Engine5" instance=ExtResource("7_5mqgg")]
+
+[node name="Engine6" type="RigidBody3D" parent="."]
+transform = Transform3D(-2.18557e-07, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 2.18557e-07, 9.55343e-15, -2.32125, 0, 3.20676)
+center_of_mass_mode = 1
+
+[node name="Engine" type="MeshInstance3D" parent="Engine6"]
+mesh = SubResource("ArrayMesh_a5jow")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Engine6"]
+shape = SubResource("ConvexPolygonShape3D_bukwo")
+
+[node name="Snap" parent="Engine6" instance=ExtResource("7_0cicx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Thrust" parent="Engine6" instance=ExtResource("7_5mqgg")]

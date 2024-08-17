@@ -1,21 +1,20 @@
 extends Camera3D
+class_name Player
 
 @export var THRUST = 1.0
 @export var TORQUE = 1.0
 @export_range(0.0, 1.0) var INNER_DEADZONE = 0.2
 @export_range(0.0, 1.0) var OUTER_DEADZONE = 0.8
 
-var rb : Construct
 var marker = preload("res://Scenes/marker.tscn")
 
 func _ready():
-	rb = self.get_parent() as Construct
-	rb.linear_damp = 1.0
-	rb.angular_damp = 1.0
+	get_parent().linear_damp = 1.0
+	get_parent().angular_damp = 1.0
 	
 	
 func _process(_delta):
-	$"../../GUI/Joystick/Text".text = "[center]%.2f[/center]" % rb.linear_velocity.length()
+	$"../../GUI/Joystick/Text".text = "[center]%.2f[/center]" % get_parent().linear_velocity.length()
 	if $BodyRaycast.get_collider():
 		$"../../GUI/Joystick".dotColor = Color.GREEN
 	else:
@@ -26,8 +25,8 @@ func _process(_delta):
 func _physics_process(_delta):
 	var trans = get_trans_input()
 	var rot = get_rot_input()
-	rb.linear_damp = 0.0 if trans.length() > 1e-1 else 1.0
-	rb.input_move(trans, rot)
+	get_parent().linear_damp = 0.0 if trans.length() > 1e-1 else 1.0
+	input_move(trans, rot)
 	
 	
 func get_trans_input():
@@ -53,6 +52,20 @@ func get_rot_input():
 	return rot_input
 	
 	
+func input_move(trans, rot):
+	for thrust in get_parent().get_children():
+		if thrust is Thrust:
+			thrust.modulate = Color.RED
+			var linear = thrust.basis.y.dot(trans)
+			var angular = (thrust.position - get_parent().center_of_mass).cross(thrust.basis.y).dot(rot)
+			if linear > 1e-1:
+				thrust.modulate = Color.GREEN
+				get_parent().apply_force(get_parent().basis * (thrust.basis.y * linear * thrust.force), get_parent().center_of_mass + get_parent().basis * thrust.position)
+			elif angular > 1e-1:
+				thrust.modulate = Color.GREEN
+				get_parent().apply_force(get_parent().basis * (thrust.basis.y * angular * thrust.force), get_parent().center_of_mass + get_parent().basis * thrust.position)
+	
+	
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed():
 		if event.button_index == 1:
@@ -74,7 +87,7 @@ func toggle_grab(node):
 			if child is Snap and not child.connected_to :
 				child.attach()
 	elif node:
-		$Joint.node_a = rb.get_path()
+		$Joint.node_a = get_parent().get_path()
 		$Joint.node_b = node.get_path()
 	
 	
