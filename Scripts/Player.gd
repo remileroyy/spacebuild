@@ -1,8 +1,6 @@
 extends Camera3D
 class_name Player
 
-@export var THRUST = 1.0
-@export var TORQUE = 1.0
 @export_range(0.0, 1.0) var INNER_DEADZONE = 0.2
 @export_range(0.0, 1.0) var OUTER_DEADZONE = 0.8
 
@@ -10,7 +8,7 @@ var marker = preload("res://Scenes/marker.tscn")
 
 func _ready():
 	get_parent().linear_damp = 0.0
-	get_parent().angular_damp = 1.0
+	get_parent().angular_damp = 0.0
 	
 	
 func _process(_delta):
@@ -34,10 +32,12 @@ func get_linear_input():
 	linear.x = Input.get_action_strength("Right") - Input.get_action_strength("Left")
 	linear.y = Input.get_action_strength("Up") - Input.get_action_strength("Down")
 	linear.z = Input.get_action_strength("Back") - Input.get_action_strength("Forward")
-	return linear
+	return global_basis * linear
 	
 	
 func get_angular_input():
+	if Input.is_action_pressed("Space"):
+		return Vector3.ZERO.move_toward(-get_parent().angular_velocity, 1.0)
 	var mouse = get_viewport().get_mouse_position()
 	var center = get_viewport().size * 0.5
 	mouse = (mouse - center) / center.y
@@ -49,7 +49,7 @@ func get_angular_input():
 	angular.x = -mouse.y
 	angular.y = -mouse.x
 	angular.z = Input.get_action_strength("Roll-") - Input.get_action_strength("Roll+")
-	return angular
+	return global_basis * angular
 	
 	
 func _input(event):

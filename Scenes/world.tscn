@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://Scripts/Parts.gd" id="1_yixqb"]
 [ext_resource type="Script" path="res://Scripts/UI/Crosshair.gd" id="3_4w6je"]
 [ext_resource type="Texture2D" uid="uid://c82wsmn87t0yr" path="res://Assets/Images/sky_grey_ring.png" id="4_at40n"]
-[ext_resource type="PackedScene" uid="uid://o3u02d06e8q1" path="res://Scenes/player.tscn" id="6_uelb4"]
+[ext_resource type="Script" path="res://Scripts/Player.gd" id="6_8x8ay"]
 [ext_resource type="PackedScene" uid="uid://dqbty3nmh21qq" path="res://Scenes/thrust.tscn" id="7_5mqgg"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ap7gf"]
@@ -110,11 +110,8 @@ bbcode_enabled = true
 environment = SubResource("Environment_1q1mr")
 
 [node name="Construct" type="RigidBody3D" parent="."]
-transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 center_of_mass_mode = 1
-
-[node name="Player" parent="Construct" instance=ExtResource("6_uelb4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7)
 
 [node name="Cube" type="MeshInstance3D" parent="Construct"]
 mesh = SubResource("ArrayMesh_05jqx")
@@ -124,17 +121,43 @@ skeleton = NodePath("")
 shape = SubResource("ConvexPolygonShape3D_2ruo4")
 
 [node name="left" parent="Construct" instance=ExtResource("7_5mqgg")]
-transform = Transform3D(-4.37114e-08, 1, 7.10543e-15, -0.999999, -4.37113e-08, -3.55271e-15, -1.91068e-15, -1.42108e-14, 0.999999, -2, 0, 2)
+transform = Transform3D(-4.37114e-08, 1, 7.10543e-15, -0.999999, -4.37113e-08, -3.55271e-15, -1.91068e-15, -1.42108e-14, 0.999999, -2, 1, 2)
+skeleton = NodePath("")
+
+[node name="left3" parent="Construct" instance=ExtResource("7_5mqgg")]
+transform = Transform3D(-4.37114e-08, 1, 7.10543e-15, -0.999999, -4.37113e-08, -3.55271e-15, -1.91068e-15, -1.42108e-14, 0.999999, -2, -1, 2)
 skeleton = NodePath("")
 
 [node name="right" parent="Construct" instance=ExtResource("7_5mqgg")]
-transform = Transform3D(4.37114e-08, -1, -8.74228e-08, -1, -4.37114e-08, -3.55271e-15, -1.91068e-15, 8.74227e-08, -1, 2, 0, 2)
+transform = Transform3D(4.37114e-08, -1, -8.74228e-08, -1, -4.37114e-08, -3.55271e-15, -1.91068e-15, 8.74227e-08, -1, 2, 1, 2)
+skeleton = NodePath("")
+
+[node name="right3" parent="Construct" instance=ExtResource("7_5mqgg")]
+transform = Transform3D(4.37114e-08, -1, -8.74228e-08, -1, -4.37114e-08, -3.55271e-15, -1.91068e-15, 8.74227e-08, -1, 2, -1, 2)
 skeleton = NodePath("")
 
 [node name="left2" parent="Construct" instance=ExtResource("7_5mqgg")]
-transform = Transform3D(0.999999, -3.55271e-14, 3.55271e-15, -6.39488e-14, 1, 7.10543e-15, -1.91068e-15, -1.42108e-14, 0.999999, 8.74228e-08, -2, 2)
+transform = Transform3D(0.999999, -3.55271e-14, 3.55271e-15, -6.75016e-14, 1, 7.10543e-15, -1.91068e-15, -1.42108e-14, 0.999999, 8.74228e-08, -2, 2)
 skeleton = NodePath("")
 
 [node name="right2" parent="Construct" instance=ExtResource("7_5mqgg")]
 transform = Transform3D(1, 8.74227e-08, 7.37408e-15, 8.74228e-08, -1, -8.74228e-08, -1.91068e-15, 8.74227e-08, -1, -8.74228e-08, 2, 2)
 skeleton = NodePath("")
+
+[node name="Player" type="Camera3D" parent="Construct"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 7)
+far = 20000.0
+script = ExtResource("6_8x8ay")
+
+[node name="BodyRaycast" type="RayCast3D" parent="Construct/Player"]
+target_position = Vector3(0, 0, -5)
+hit_back_faces = false
+
+[node name="AreaRaycast" type="RayCast3D" parent="Construct/Player"]
+target_position = Vector3(0, 0, -5)
+collision_mask = 2
+hit_back_faces = false
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="Joint" type="Generic6DOFJoint3D" parent="Construct/Player"]
