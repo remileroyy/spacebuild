@@ -1,0 +1,21 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=3 uid="uid://dcncn3sddjhqs"]
+
+[ext_resource type="Shader" path="res://Assets/Shaders/engine_flame.gdshader" id="1_w5rjc"]
+
+[sub_resource type="Gradient" id="Gradient_ybfiq"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_3nk7c"]
+gradient = SubResource("Gradient_ybfiq")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gmhf0"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_8owj5"]
+seamless = true
+noise = SubResource("FastNoiseLite_gmhf0")
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_w5rjc")
+shader_parameter/fade = 1.0
+shader_parameter/noise = SubResource("NoiseTexture2D_8owj5")
+shader_parameter/gradient = SubResource("GradientTexture1D_3nk7c")

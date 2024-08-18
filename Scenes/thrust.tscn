@@ -1,11 +1,10 @@
 [gd_scene load_steps=4 format=3 uid="uid://dqbty3nmh21qq"]
 
 [ext_resource type="Script" path="res://Scripts/Thrust.gd" id="1_7pbh7"]
-[ext_resource type="ArrayMesh" uid="uid://c3ukygfvh4jpg" path="res://Assets/Models/cone.obj" id="1_lvwof"]
-[ext_resource type="Material" uid="uid://dluc5fpx5vinx" path="res://Assets/Shaders/engine_flame.tres" id="2_efylr"]
+[ext_resource type="ArrayMesh" uid="uid://b38d200gp541o" path="res://Assets/Models/cylinder.obj" id="1_bwglc"]
+[ext_resource type="Material" uid="uid://dcncn3sddjhqs" path="res://Assets/Shaders/engine_material.tres" id="2_15yer"]
 
 [node name="Thrust" type="MeshInstance3D"]
-mesh = ExtResource("1_lvwof")
-surface_material_override/0 = ExtResource("2_efylr")
+mesh = ExtResource("1_bwglc")
+surface_material_override/0 = ExtResource("2_15yer")
 script = ExtResource("1_7pbh7")
-force = 10.0

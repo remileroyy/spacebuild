@@ -9,13 +9,12 @@ class_name Player
 var marker = preload("res://Scenes/marker.tscn")
 
 func _ready():
-	get_parent().linear_damp = 1.0
+	get_parent().linear_damp = 0.0
 	get_parent().angular_damp = 1.0
-	Snap.update_mass_and_com(get_parent())
 	
 	
 func _process(_delta):
-	$"../../GUI/Crosshair/Text".text = "[center]%.2f[/center]" % get_parent().linear_velocity.length()
+	$"../../GUI/Crosshair/Text".text = "[center]%s\n%s[/center]" % [get_parent().linear_velocity, get_parent().angular_velocity]
 	if $BodyRaycast.get_collider():
 		$"../../GUI/Crosshair".dotColor = Color.GREEN
 	else:
@@ -25,7 +24,6 @@ func _process(_delta):
 func _physics_process(_delta):
 	var linear = get_linear_input()
 	var angular = get_angular_input()
-	get_parent().linear_damp = 0.0 if linear.length() > 1e-1 else 1.0
 	for thrust in get_parent().get_children():
 		if thrust is Thrust:
 			thrust.apply_thrust(linear, angular)

@@ -110,11 +110,11 @@ bbcode_enabled = true
 environment = SubResource("Environment_1q1mr")
 
 [node name="Construct" type="RigidBody3D" parent="."]
-transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 center_of_mass_mode = 1
 
 [node name="Player" parent="Construct" instance=ExtResource("6_uelb4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7)
+transform = Transform3D(1, 0, 0, 0, 0.953496, 0.301405, 0, -0.301405, 0.953496, 0, 3.74494, 10.9692)
 
 [node name="Cube" type="MeshInstance3D" parent="Construct"]
 mesh = SubResource("ArrayMesh_05jqx")
@@ -123,18 +123,26 @@ skeleton = NodePath("")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Construct"]
 shape = SubResource("ConvexPolygonShape3D_2ruo4")
 
-[node name="left" parent="Construct" instance=ExtResource("7_5mqgg")]
-transform = Transform3D(-4.37114e-08, 1, 7.10543e-15, -0.999999, -4.37113e-08, -3.55271e-15, -1.91068e-15, -1.42108e-14, 0.999999, -2, 0, 2)
+[node name="thrust5" parent="Construct" instance=ExtResource("7_5mqgg")]
+transform = Transform3D(-4.37114e-08, 1, 7.10543e-15, -0.999999, -4.37114e-08, -3.55271e-15, -1.91068e-15, -1.42108e-14, 0.999999, -2, 0, 2)
 skeleton = NodePath("")
 
-[node name="right" parent="Construct" instance=ExtResource("7_5mqgg")]
+[node name="thrust4" parent="Construct" instance=ExtResource("7_5mqgg")]
 transform = Transform3D(4.37114e-08, -1, -8.74228e-08, -1, -4.37114e-08, -3.55271e-15, -1.91068e-15, 8.74227e-08, -1, 2, 0, 2)
 skeleton = NodePath("")
 
-[node name="left2" parent="Construct" instance=ExtResource("7_5mqgg")]
-transform = Transform3D(0.999999, -3.55271e-14, 3.55271e-15, -6.39488e-14, 1, 7.10543e-15, -1.91068e-15, -1.42108e-14, 0.999999, 8.74228e-08, -2, 2)
+[node name="thrust7" parent="Construct" instance=ExtResource("7_5mqgg")]
+transform = Transform3D(-1, -8.74228e-08, -3.55271e-15, -8.74227e-08, 1, 8.74227e-08, -5.73205e-15, 8.74227e-08, -1, 0, -2, 2)
 skeleton = NodePath("")
 
-[node name="right2" parent="Construct" instance=ExtResource("7_5mqgg")]
-transform = Transform3D(1, 8.74227e-08, 7.37408e-15, 8.74228e-08, -1, -8.74228e-08, -1.91068e-15, 8.74227e-08, -1, -8.74228e-08, 2, 2)
+[node name="thrust6" parent="Construct" instance=ExtResource("7_5mqgg")]
+transform = Transform3D(-1, -8.74228e-08, -3.55271e-15, 8.74227e-08, -1, -7.10542e-15, -1.91068e-15, -1.42108e-14, 1, 0, 2, 2)
+skeleton = NodePath("")
+
+[node name="thrust8" parent="Construct" instance=ExtResource("7_5mqgg")]
+transform = Transform3D(3.82137e-15, -4.37114e-08, -1, -1, -4.37114e-08, -3.55271e-15, -4.37114e-08, 1, -4.37114e-08, 0, 0, 0)
+skeleton = NodePath("")
+
+[node name="thrust3" parent="Construct" instance=ExtResource("7_5mqgg")]
+transform = Transform3D(0, -4.37114e-08, 1, -1, -4.37114e-08, -3.55271e-15, 4.37114e-08, -1, -4.37114e-08, 0, 0, 4)
 skeleton = NodePath("")
