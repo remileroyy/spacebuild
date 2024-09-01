@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://csklfmsunrjw6"]
 
-[ext_resource type="Texture2D" uid="uid://dsqwv801kw760" path="res://Assets/Images/crosshair022.png" id="1_trpu7"]
-[ext_resource type="Script" path="res://Scripts/UI/Marker.gd" id="2_rfd7n"]
+[ext_resource type="Texture2D" uid="uid://drba62pmxitfl" path="res://assets/images/crosshair001.png" id="1_wo5kf"]
+[ext_resource type="Script" path="res://scripts/UI/Marker.gd" id="2_rfd7n"]
 
 [node name="Marker" type="TextureRect"]
 z_index = 1
 offset_right = 64.0
 offset_bottom = 64.0
-texture = ExtResource("1_trpu7")
+texture = ExtResource("1_wo5kf")
 script = ExtResource("2_rfd7n")

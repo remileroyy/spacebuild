@@ -1,7 +1,7 @@
 extends Node3D
 class_name Parts
 
-const scene: PackedScene = preload("res://Scenes/parts.tscn")
+const scene: PackedScene = preload("res://scenes/parts.tscn")
 var parts: Array[Node]
 
 func _ready():

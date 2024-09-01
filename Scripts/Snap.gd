@@ -76,5 +76,5 @@ func _process(_delta):
 	
 	
 func snap_to(other: Snap):
-	get_parent().global_basis = other.global_basis * Basis.FLIP_Y * basis.inverse()
+	get_parent().global_basis = other.global_basis * Basis.FLIP_Y * Basis.FLIP_X * basis.inverse()
 	get_parent().global_position = other.global_position - get_parent().global_basis * position

@@ -1,10 +1,28 @@
-[gd_scene load_steps=4 format=3 uid="uid://dqbty3nmh21qq"]
+[gd_scene load_steps=9 format=3 uid="uid://dqbty3nmh21qq"]
 
-[ext_resource type="Script" path="res://Scripts/Thrust.gd" id="1_7pbh7"]
-[ext_resource type="ArrayMesh" uid="uid://b38d200gp541o" path="res://Assets/Models/cylinder.obj" id="1_bwglc"]
-[ext_resource type="Material" uid="uid://dcncn3sddjhqs" path="res://Assets/Shaders/engine_material.tres" id="2_15yer"]
+[ext_resource type="Script" path="res://scripts/Thrust.gd" id="1_7pbh7"]
+[ext_resource type="ArrayMesh" uid="uid://b38d200gp541o" path="res://assets/models/cylinder.obj" id="1_bwglc"]
+[ext_resource type="Shader" path="res://assets/shaders/engine_flame.gdshader" id="2_ilmwp"]
+
+[sub_resource type="Gradient" id="Gradient_ybfiq"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_3nk7c"]
+gradient = SubResource("Gradient_ybfiq")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gmhf0"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_8owj5"]
+seamless = true
+noise = SubResource("FastNoiseLite_gmhf0")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_o6wcs"]
+render_priority = 0
+shader = ExtResource("2_ilmwp")
+shader_parameter/fade = 1.0
+shader_parameter/noise = SubResource("NoiseTexture2D_8owj5")
+shader_parameter/gradient = SubResource("GradientTexture1D_3nk7c")
 
 [node name="Thrust" type="MeshInstance3D"]
 mesh = ExtResource("1_bwglc")
-surface_material_override/0 = ExtResource("2_15yer")
+surface_material_override/0 = SubResource("ShaderMaterial_o6wcs")
 script = ExtResource("1_7pbh7")

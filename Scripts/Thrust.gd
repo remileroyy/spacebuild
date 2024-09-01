@@ -2,13 +2,14 @@ extends MeshInstance3D
 class_name Thrust
 
 @export var magnitude = 1.0
-const EPS = 1e-3
+const EPS = 1e-2
 
-var material = preload("res://Assets/Shaders/engine_material.tres")
+var material = preload("res://assets/shaders/engine_material.tres")
 
 func _ready():
 	material = material.duplicate()
 	set_surface_override_material(0, material)
+	material.set_shader_parameter("fade", 1.0 / EPS)
 	
 	
 func apply_thrust(linear_input, angular_input):

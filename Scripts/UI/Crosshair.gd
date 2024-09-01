@@ -10,10 +10,10 @@ func _draw():
 	mouse = (mouse - center) / center.y
 	if mouse.length() > OUTER_DEADZONE:
 		mouse = mouse.normalized() * OUTER_DEADZONE
-	draw_line(Vector2.ZERO, mouse * center.y, Color.WHITE, 0.8, true)
-	draw_arc(Vector2.ZERO, INNER_DEADZONE * center.y, 0, TAU, 45, Color.WHITE, 0.8, true)
-	draw_circle(Vector2.ZERO, 4.0, dotColor)
-	draw_circle(mouse * center.y, 4.0, Color.WHITE)
+	draw_line(0.5 * size, 0.5 * size + mouse * center.y, Color.WHITE, 0.8, true)
+	draw_arc(0.5 * size, INNER_DEADZONE * center.y, 0, TAU, 45, Color.WHITE, 0.8, true)
+	draw_circle(0.5 * size, 4.0, dotColor)
+	draw_circle(0.5 * size + mouse * center.y, 4.0, Color.WHITE)
 
 func _process(_delta):
 	queue_redraw()

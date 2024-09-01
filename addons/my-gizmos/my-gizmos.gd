@@ -1,7 +1,7 @@
 @tool
 extends EditorPlugin
 
-var gizmo_plugin = preload("res://addons/my-gizmos/local_gizmo.gd").new()
+var gizmo_plugin = preload("res://addons/my-gizmos/local-gizmo.gd").new()
 
 func _enter_tree():
 	add_node_3d_gizmo_plugin(gizmo_plugin)
