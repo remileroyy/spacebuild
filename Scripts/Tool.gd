@@ -1,9 +1,13 @@
 extends Generic6DOFJoint3D
 
+@export var dig_radius : float = 2.0
 
 func _process(_delta):
-	if $BodyRaycast.get_collider():
+	var collider = $BodyRaycast.get_collider()
+	if collider:
 		%Crosshair.dotColor = Color.GREEN
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and collider is Asteroid:
+			collider.dig($BodyRaycast.get_collision_point(), dig_radius)
 	else:
 		%Crosshair.dotColor = Color.WHITE
 
@@ -26,6 +30,6 @@ func toggle_grab(node):
 		for child in children:
 			if child is Snap and not child.connected_to :
 				child.attach()
-	elif node:
+	elif node and node is RigidBody3D:
 		node_a = get_parent().get_path()
 		node_b = node.get_path()

@@ -124,6 +124,7 @@ environment = SubResource("Environment_1q1mr")
 transform = Transform3D(-0.322017, -0.116127, -0.939585, 4.3254e-09, 0.992449, -0.122661, 0.946734, -0.0394989, -0.319585, 0, 0, 0)
 
 [node name="Construct" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.6652)
 mass = 100.0
 center_of_mass_mode = 1
 
@@ -138,7 +139,6 @@ hit_back_faces = false
 
 [node name="Tool" type="Generic6DOFJoint3D" parent="Construct"]
 script = ExtResource("7_uqay7")
-dig_radius = 5.0
 
 [node name="AreaRaycast" type="RayCast3D" parent="Construct/Tool"]
 target_position = Vector3(0, 0, -5)
@@ -148,7 +148,7 @@ collide_with_areas = true
 collide_with_bodies = false
 
 [node name="BodyRaycast" type="RayCast3D" parent="Construct/Tool"]
-target_position = Vector3(0, 0, -3)
+target_position = Vector3(0, 0, -5)
 hit_back_faces = false
 
 [node name="Cube" type="MeshInstance3D" parent="Construct"]
@@ -257,7 +257,7 @@ magnitude = 20.0
 [node name="Asteroid" type="StaticBody3D" parent="."]
 script = ExtResource("8_s511y")
 noise_scale = 0.5
-noise_offset = Vector3(54, 7, 42)
+noise_offset = Vector3(54, 878, 42)
 chunk_scale = 50.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Asteroid"]

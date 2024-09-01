@@ -35,6 +35,6 @@ void fragment()
 	// Contrast
 	float midpoint = pow(0.5, 2.2);
 	text.rgb = (text.rgb - vec3(midpoint)) * contrast + midpoint;
-	
+
 	COLOR = text;
 }
