@@ -59,7 +59,7 @@ func _input(event):
 	
 	
 func toggle_marker(node):
-	if node:
+	if node and node is RigidBody3D:
 		var any = false
 		for child in node.get_children():
 			if child is Marker:

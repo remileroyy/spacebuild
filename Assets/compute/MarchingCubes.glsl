@@ -157,7 +157,7 @@ layout(set = 0, binding = 4, std430) restrict buffer VoxelBuffer
 }
 voxels;
 
-void init_noise(int index, vec3 samplePos)
+float noise(vec3 samplePos)
 {   
 	float sum = 0;
 	float amplitude = 1;
@@ -176,7 +176,7 @@ void init_noise(int index, vec3 samplePos)
 	}
 	float density = sum;
 
-	voxels.data[index] = density;
+	return density;
 }
 
 void dig(vec3 coord)
@@ -217,7 +217,7 @@ vec4 evaluate(vec3 coord)
 	{
 		vec3 noiseOffset = vec3(params.noiseOffsetX, params.noiseOffsetY, params.noiseOffsetZ);
 		vec3 samplePos = (worldPos + noiseOffset) * params.noiseScale / params.scale;
-		init_noise(index, samplePos);
+		voxels.data[index] = 1.0 + 0.2 * noise(samplePos) - 3.0 * length(posNorm);
 	}
 
 	return vec4(worldPos, voxels.data[index]);

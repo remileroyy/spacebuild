@@ -124,7 +124,6 @@ environment = SubResource("Environment_1q1mr")
 transform = Transform3D(-0.322017, -0.116127, -0.939585, 4.3254e-09, 0.992449, -0.122661, 0.946734, -0.0394989, -0.319585, 0, 0, 0)
 
 [node name="Asteroid" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -46)
 script = ExtResource("8_s511y")
 noise_scale = 0.5
 noise_offset = Vector3(8757, 78, 7)
@@ -136,16 +135,19 @@ iso_level = 0.0
 shape = SubResource("ConcavePolygonShape3D_rqn4r")
 
 [node name="Construct" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 53.9032)
 mass = 100.0
 center_of_mass_mode = 1
 
-[node name="Player" type="Camera3D" parent="Construct"]
-transform = Transform3D(1, 0, 0, 0, 1, 2.98023e-08, 0, -2.98023e-08, 1, 0, 2, 1)
+[node name="SpringArm3D" type="SpringArm3D" parent="Construct"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0)
+spring_length = 5.0
+
+[node name="Player" type="Camera3D" parent="Construct/SpringArm3D"]
 far = 20000.0
 script = ExtResource("6_8x8ay")
 
-[node name="BodyRaycast" type="RayCast3D" parent="Construct/Player"]
+[node name="BodyRaycast" type="RayCast3D" parent="Construct/SpringArm3D/Player"]
 target_position = Vector3(0, 0, -20)
 hit_back_faces = false
 

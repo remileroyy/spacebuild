@@ -5,12 +5,12 @@ class_name Asteroid
 @export var noise_scale : float = 2.0
 @export var noise_offset : Vector3
 @export var iso_level : float = 1
-@export var chunk_scale : float = 1000
+@export var chunk_scale : float = 100
 @export var player : Node3D
 
 const resolution : int = 8
-const num_waitframes_gpusync : int = 1
-const num_waitframes_meshthread : int = 5
+const num_waitframes_gpusync : int = 2
+const num_waitframes_meshthread : int = 10
 
 const work_group_size : int = 8
 const num_voxels_per_axis : int = work_group_size * resolution
