@@ -136,12 +136,12 @@ iso_level = 0.0
 shape = SubResource("ConcavePolygonShape3D_rqn4r")
 
 [node name="Construct" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
 mass = 100.0
 center_of_mass_mode = 1
 
 [node name="Player" type="Camera3D" parent="Construct"]
-transform = Transform3D(1, 0, 0, 0, 1, 2.98023e-08, 0, -2.98023e-08, 1, 0, 2, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 2.98023e-08, 0, -2.98023e-08, 1, 0, 0, -1)
 far = 20000.0
 script = ExtResource("6_8x8ay")
 
@@ -151,7 +151,7 @@ hit_back_faces = false
 
 [node name="Tool" type="Generic6DOFJoint3D" parent="Construct"]
 script = ExtResource("7_uqay7")
-dig_radius = 3.0
+dig_radius = 10.0
 
 [node name="AreaRaycast" type="RayCast3D" parent="Construct/Tool"]
 target_position = Vector3(0, 0, -5)
@@ -161,7 +161,7 @@ collide_with_areas = true
 collide_with_bodies = false
 
 [node name="BodyRaycast" type="RayCast3D" parent="Construct/Tool"]
-target_position = Vector3(0, 0, -3)
+target_position = Vector3(0, 0, -5)
 hit_back_faces = false
 
 [node name="Cube" type="MeshInstance3D" parent="Construct"]
