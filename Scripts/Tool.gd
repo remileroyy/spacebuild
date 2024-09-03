@@ -6,6 +6,8 @@ func _process(_delta):
 	var collider = $BodyRaycast.get_collider()
 	if collider:
 		%Crosshair.dotColor = Color.GREEN
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and collider is Asteroid:
+			collider.dig($BodyRaycast.get_collision_point(), dig_radius)
 	else:
 		%Crosshair.dotColor = Color.WHITE
 

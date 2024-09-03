@@ -1,8 +1,9 @@
 extends StaticBody3D
+class_name Asteroid
 
 const resolution : int = 8
 const work_group_size : int = 8
-const num_voxels_per_axis : int = work_group_size * resolution
+const size : int = work_group_size * resolution
 
 # Compute stuff
 var rendering_device: RenderingDevice
@@ -17,31 +18,40 @@ var counter_buffer : RID
 var lut_buffer : RID
 
 # Data received from compute shader
-var triangle_data_bytes
-var counter_data_bytes
 var num_triangles
-
 var array_mesh : ArrayMesh
+var collision_shape: ConcavePolygonShape3D
 var verts = PackedVector3Array()
 var normals = PackedVector3Array()
 
-var thread
-var params
+var thread : Thread
+
+var params: Array[float]
 
 func _ready():
 	array_mesh = ArrayMesh.new()
+	collision_shape = ConcavePolygonShape3D.new()
 	$MeshInstance3D.mesh = array_mesh
-	params = []
-	params.append(float(num_voxels_per_axis))
-	params.append(position.x)
-	params.append(position.y)
-	params.append(position.z)
-	print(params)
-	
+	$CollisionShape3D.shape = collision_shape
+	params = [float(size), position.x, position.y, position.z, 0.0, 0.0, 0.0, 0.0]
 	init_compute()
+	thread = Thread.new()
+	thread.start(update_mesh)
+	
+func dig(center, radius):
+	if not thread.is_alive():
+		thread.wait_to_finish()
+		params = [float(size), position.x, position.y, position.z, center.x, center.y, center.z, radius]
+		thread.start(update_mesh)
+	
+func update_mesh():
+	if params[-1] > 0.1:
+		run_compute()
+		rendering_device.sync()
+		params = [float(size), position.x, position.y, position.z, 0.0, 0.0, 0.0, 0.0]
 	run_compute()
+	rendering_device.sync()
 	fetch_and_process_compute_data()
-	create_mesh()
 	
 func init_compute():
 	rendering_device= RenderingServer.create_local_rendering_device()
@@ -52,7 +62,7 @@ func init_compute():
 	
 	# Create triangles buffer
 	const max_tris_per_voxel : int = 5
-	const max_triangles : int = max_tris_per_voxel * int(pow(num_voxels_per_axis, 3))
+	const max_triangles : int = max_tris_per_voxel * int(pow(size, 3))
 	const bytes_per_float : int = 4
 	const floats_per_triangle : int = 4 * 3
 	const bytes_per_triangle : int = floats_per_triangle * bytes_per_float
@@ -65,7 +75,7 @@ func init_compute():
 	triangle_uniform.add_id(triangle_buffer)
 	
 	# Create voxels buffer
-	const max_voxel_bytes = bytes_per_float * int(pow(num_voxels_per_axis + 1, 3))
+	const max_voxel_bytes = bytes_per_float * int(pow(size + 1, 3))
 	
 	voxel_buffer = rendering_device.storage_buffer_create(max_voxel_bytes)
 	var voxel_uniform = RDUniform.new()
@@ -122,16 +132,11 @@ func run_compute():
 	
 	# Run
 	rendering_device.submit()
-
-func fetch_and_process_compute_data():
-	rendering_device.sync()
-	# Get output
-	triangle_data_bytes = rendering_device.buffer_get_data(triangle_buffer)
-	counter_data_bytes =  rendering_device.buffer_get_data(counter_buffer)
 	
-	var triangle_data = triangle_data_bytes.to_float32_array()
-	num_triangles = counter_data_bytes.to_int32_array()[0]
-	print(num_triangles)
+func fetch_and_process_compute_data():
+	# Get output
+	var triangle_data = rendering_device.buffer_get_data(triangle_buffer).to_float32_array()
+	num_triangles = rendering_device.buffer_get_data(counter_buffer).to_int32_array()[0]
 	var num_verts : int = num_triangles * 3
 	verts.resize(num_verts)
 	normals.resize(num_verts)
@@ -148,9 +153,7 @@ func fetch_and_process_compute_data():
 		normals[tri_index * 3 + 0] = norm
 		normals[tri_index * 3 + 1] = norm
 		normals[tri_index * 3 + 2] = norm
-		
 	
-func create_mesh():
 	if len(verts) > 0:
 		var mesh_data = []
 		mesh_data.resize(Mesh.ARRAY_MAX)
@@ -158,7 +161,7 @@ func create_mesh():
 		mesh_data[Mesh.ARRAY_NORMAL] = normals
 		array_mesh.clear_surfaces()
 		array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_data)
-	
+		collision_shape.set_faces(verts)
 	
 func load_lut(file_path):
 	var file = FileAccess.open(file_path, FileAccess.READ)
@@ -172,11 +175,10 @@ func load_lut(file_path):
 		
 	return indices
 	
-	
 func _notification(type):
 	if type == NOTIFICATION_PREDELETE:
 		release()
-
+	
 func release():
 	rendering_device.free_rid(pipeline)
 	rendering_device.free_rid(triangle_buffer)
