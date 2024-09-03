@@ -1,25 +1,8 @@
 extends StaticBody3D
-class_name Asteroid
-
-# Settings, references and constants
-@export var noise_scale : float = 2.0
-@export var noise_offset : Vector3
-@export var iso_level : float = 1
-@export var chunk_scale : float = 100
-@export var player : Node3D
 
 const resolution : int = 8
-const num_waitframes_gpusync : int = 2
-const num_waitframes_meshthread : int = 10
-
 const work_group_size : int = 8
 const num_voxels_per_axis : int = work_group_size * resolution
-const buffer_set_index : int = 0
-const triangle_bind_index : int = 0
-const params_bind_index : int = 1
-const counter_bind_index : int = 2
-const lut_bind_index : int = 3
-const voxel_bind_index : int = 4
 
 # Compute stuff
 var rendering_device: RenderingDevice
@@ -28,55 +11,37 @@ var pipeline : RID
 
 var buffer_set : RID
 var triangle_buffer : RID
+var voxel_buffer : RID
 var params_buffer : RID
 var counter_buffer : RID
 var lut_buffer : RID
-var voxel_buffer : RID
 
 # Data received from compute shader
 var triangle_data_bytes
 var counter_data_bytes
 var num_triangles
 
+var array_mesh : ArrayMesh
 var verts = PackedVector3Array()
 var normals = PackedVector3Array()
 
-# State
-var time : float
-var frame : int
-var last_compute_dispatch_frame : int
-var last_meshthread_start_frame : int
-var waiting_for_compute : bool
-var waiting_for_meshthread : bool
 var thread
-
-# Dig
-var dig_center : Vector3
-var dig_radius : float
-
-func dig(center, radius):
-	if not waiting_for_compute and not waiting_for_meshthread:
-		dig_center = center
-		dig_radius = radius
-		run_compute()
-
+var params
 
 func _ready():
-	$MeshInstance3D.mesh = ArrayMesh.new()
-	$CollisionShape3D.shape = ConcavePolygonShape3D.new()
+	array_mesh = ArrayMesh.new()
+	$MeshInstance3D.mesh = array_mesh
+	params = []
+	params.append(float(num_voxels_per_axis))
+	params.append(position.x)
+	params.append(position.y)
+	params.append(position.z)
+	print(params)
+	
 	init_compute()
 	run_compute()
 	fetch_and_process_compute_data()
 	create_mesh()
-	
-func _process(delta):
-	if (waiting_for_compute && frame - last_compute_dispatch_frame >= num_waitframes_gpusync):
-		fetch_and_process_compute_data()
-	elif (waiting_for_meshthread && frame - last_meshthread_start_frame >= num_waitframes_meshthread):
-		create_mesh()
-	
-	frame += 1
-	time += delta
 	
 func init_compute():
 	rendering_device= RenderingServer.create_local_rendering_device()
@@ -91,20 +56,29 @@ func init_compute():
 	const bytes_per_float : int = 4
 	const floats_per_triangle : int = 4 * 3
 	const bytes_per_triangle : int = floats_per_triangle * bytes_per_float
-	const max_bytes : int = bytes_per_triangle * max_triangles
+	const max_triangle_bytes : int = bytes_per_triangle * max_triangles
 	
-	triangle_buffer = rendering_device.storage_buffer_create(max_bytes)
+	triangle_buffer = rendering_device.storage_buffer_create(max_triangle_bytes)
 	var triangle_uniform = RDUniform.new()
 	triangle_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	triangle_uniform.binding = triangle_bind_index
+	triangle_uniform.binding = 0
 	triangle_uniform.add_id(triangle_buffer)
 	
+	# Create voxels buffer
+	const max_voxel_bytes = bytes_per_float * int(pow(num_voxels_per_axis + 1, 3))
+	
+	voxel_buffer = rendering_device.storage_buffer_create(max_voxel_bytes)
+	var voxel_uniform = RDUniform.new()
+	voxel_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+	voxel_uniform.binding = 1
+	voxel_uniform.add_id(voxel_buffer)
+	
 	# Create params buffer
-	var params_bytes = PackedFloat32Array(get_params_array()).to_byte_array()
+	var params_bytes = PackedFloat32Array(params).to_byte_array()
 	params_buffer = rendering_device.storage_buffer_create(params_bytes.size(), params_bytes)
 	var params_uniform = RDUniform.new()
 	params_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	params_uniform.binding = params_bind_index
+	params_uniform.binding = 2
 	params_uniform.add_id(params_buffer)
 	
 	# Create counter buffer
@@ -113,7 +87,7 @@ func init_compute():
 	counter_buffer = rendering_device.storage_buffer_create(counter_bytes.size(), counter_bytes)
 	var counter_uniform = RDUniform.new()
 	counter_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	counter_uniform.binding = counter_bind_index
+	counter_uniform.binding = 3
 	counter_uniform.add_id(counter_buffer)
 	
 	# Create lut buffer
@@ -122,25 +96,17 @@ func init_compute():
 	lut_buffer = rendering_device.storage_buffer_create(lut_bytes.size(), lut_bytes)
 	var lut_uniform = RDUniform.new()
 	lut_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	lut_uniform.binding = lut_bind_index
+	lut_uniform.binding = 4
 	lut_uniform.add_id(lut_buffer)
 	
-	# Create voxel buffer
-	const voxel_max_bytes : int = bytes_per_float * int(pow(num_voxels_per_axis + 1, 3))
-	voxel_buffer = rendering_device.storage_buffer_create(voxel_max_bytes)
-	var voxel_uniform = RDUniform.new()
-	voxel_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	voxel_uniform.binding = voxel_bind_index
-	voxel_uniform.add_id(voxel_buffer)
-	
 	# Create buffer setter and pipeline
-	var buffers = [triangle_uniform, params_uniform, counter_uniform, lut_uniform, voxel_uniform]
-	buffer_set = rendering_device.uniform_set_create(buffers, shader, buffer_set_index)
+	var buffers = [triangle_uniform, voxel_uniform, params_uniform, counter_uniform, lut_uniform]
+	buffer_set = rendering_device.uniform_set_create(buffers, shader, 0)
 	pipeline = rendering_device.compute_pipeline_create(shader)
 	
 func run_compute():
 	# Update params buffer
-	var params_bytes = PackedFloat32Array(get_params_array()).to_byte_array()
+	var params_bytes = PackedFloat32Array(params).to_byte_array()
 	rendering_device.buffer_update(params_buffer, 0, params_bytes.size(), params_bytes)
 	# Reset counter
 	var counter = [0]
@@ -150,33 +116,22 @@ func run_compute():
 	# Prepare compute list
 	var compute_list = rendering_device.compute_list_begin()
 	rendering_device.compute_list_bind_compute_pipeline(compute_list, pipeline)
-	rendering_device.compute_list_bind_uniform_set(compute_list, buffer_set, buffer_set_index)
+	rendering_device.compute_list_bind_uniform_set(compute_list, buffer_set, 0)
 	rendering_device.compute_list_dispatch(compute_list, resolution, resolution, resolution)
 	rendering_device.compute_list_end()
 	
 	# Run
 	rendering_device.submit()
-	last_compute_dispatch_frame = frame
-	waiting_for_compute = true
 
 func fetch_and_process_compute_data():
 	rendering_device.sync()
-	waiting_for_compute = false
 	# Get output
-	if dig_radius > 0.1:
-		dig_radius = 0.0
-		run_compute()
-	else:
-		triangle_data_bytes = rendering_device.buffer_get_data(triangle_buffer)
-		counter_data_bytes =  rendering_device.buffer_get_data(counter_buffer)
-		thread = Thread.new()
-		thread.start(process_mesh_data)
-		waiting_for_meshthread = true
-		last_meshthread_start_frame = frame
+	triangle_data_bytes = rendering_device.buffer_get_data(triangle_buffer)
+	counter_data_bytes =  rendering_device.buffer_get_data(counter_buffer)
 	
-func process_mesh_data():
 	var triangle_data = triangle_data_bytes.to_float32_array()
 	num_triangles = counter_data_bytes.to_int32_array()[0]
+	print(num_triangles)
 	var num_verts : int = num_triangles * 3
 	verts.resize(num_verts)
 	normals.resize(num_verts)
@@ -193,37 +148,17 @@ func process_mesh_data():
 		normals[tri_index * 3 + 0] = norm
 		normals[tri_index * 3 + 1] = norm
 		normals[tri_index * 3 + 2] = norm
+		
 	
 func create_mesh():
-	thread.wait_to_finish()
-	waiting_for_meshthread = false
-	
 	if len(verts) > 0:
 		var mesh_data = []
 		mesh_data.resize(Mesh.ARRAY_MAX)
 		mesh_data[Mesh.ARRAY_VERTEX] = verts
 		mesh_data[Mesh.ARRAY_NORMAL] = normals
-		$MeshInstance3D.mesh.clear_surfaces()
-		$MeshInstance3D.mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_data)
-		$CollisionShape3D.shape.set_faces(verts)
-
-func get_params_array():
-	var params = []
-	params.append(noise_scale)
-	params.append(iso_level)
-	params.append(float(num_voxels_per_axis))
-	params.append(chunk_scale)
-	params.append(position.x)
-	params.append(position.y)
-	params.append(position.z)
-	params.append(noise_offset.x)
-	params.append(noise_offset.y)
-	params.append(noise_offset.z)
-	params.append(dig_center.x)
-	params.append(dig_center.y)
-	params.append(dig_center.z)
-	params.append(dig_radius)
-	return params
+		array_mesh.clear_surfaces()
+		array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_data)
+	
 	
 func load_lut(file_path):
 	var file = FileAccess.open(file_path, FileAccess.READ)
@@ -245,14 +180,15 @@ func _notification(type):
 func release():
 	rendering_device.free_rid(pipeline)
 	rendering_device.free_rid(triangle_buffer)
+	rendering_device.free_rid(voxel_buffer)
 	rendering_device.free_rid(params_buffer)
 	rendering_device.free_rid(counter_buffer);
 	rendering_device.free_rid(lut_buffer);
-	rendering_device.free_rid(voxel_buffer);
 	rendering_device.free_rid(shader)
 	
 	pipeline = RID()
 	triangle_buffer = RID()
+	voxel_buffer = RID()
 	params_buffer = RID()
 	counter_buffer = RID()
 	lut_buffer = RID()

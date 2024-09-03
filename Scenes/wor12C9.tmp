@@ -122,12 +122,13 @@ environment = SubResource("Environment_1q1mr")
 transform = Transform3D(-0.322017, -0.116127, -0.939585, 4.3254e-09, 0.992449, -0.122661, 0.946734, -0.0394989, -0.319585, 0, 0, 0)
 
 [node name="Asteroid" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -46)
 script = ExtResource("8_s511y")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Asteroid"]
 
 [node name="Construct" type="RigidBody3D" parent="."]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 32, 32, 32)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
 mass = 100.0
 center_of_mass_mode = 1
 
