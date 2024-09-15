@@ -1,9 +1,10 @@
 extends StaticBody3D
 class_name Asteroid
 
-const resolution : int = 8
-const work_group_size : int = 8
-const size : int = work_group_size * resolution
+const chunks_per_asteroid : int = 2
+const workgroups_per_chunk : int = 8
+const voxels_per_workgroup : int = 8
+const n_voxels_per_axis : int = voxels_per_workgroup * workgroups_per_chunk * chunks_per_asteroid;
 
 # Compute stuff
 var rendering_device: RenderingDevice
@@ -17,52 +18,39 @@ var params_buffer : RID
 var counter_buffer : RID
 var lut_buffer : RID
 
-# Data received from compute shader
-var num_triangles
-var array_mesh : ArrayMesh
-var collision_shape: ConcavePolygonShape3D
-var verts = PackedVector3Array()
-var normals = PackedVector3Array()
-
-var thread : Thread
-
-var params: Array[float]
+var meshes : Dictionary
+var shapes : Dictionary
+var threads : Dictionary
 
 func _ready():
-	array_mesh = ArrayMesh.new()
-	collision_shape = ConcavePolygonShape3D.new()
-	$MeshInstance3D.mesh = array_mesh
-	$CollisionShape3D.shape = collision_shape
-	params = [float(size), position.x, position.y, position.z, 0.0, 0.0, 0.0, 0.0]
+	for x in range(chunks_per_asteroid):
+		for y in range(chunks_per_asteroid):
+			for z in range(chunks_per_asteroid):
+				var chunk_pos = Vector3(x, y, z) * voxels_per_workgroup * workgroups_per_chunk
+				meshes[chunk_pos] = MeshInstance3D.new()
+				add_child(meshes[chunk_pos])
+				meshes[chunk_pos].position = chunk_pos
+				meshes[chunk_pos].mesh = ArrayMesh.new()
+				shapes[chunk_pos] = CollisionShape3D.new()
+				add_child(shapes[chunk_pos])
+				shapes[chunk_pos].position = chunk_pos
+				shapes[chunk_pos].shape = ConcavePolygonShape3D.new()
+				threads[chunk_pos] = Thread.new()
 	init_compute()
-	thread = Thread.new()
-	thread.start(update_mesh)
-	
-func dig(center, radius):
-	if not thread.is_alive():
-		thread.wait_to_finish()
-		params = [float(size), position.x, position.y, position.z, center.x, center.y, center.z, radius]
-		thread.start(update_mesh)
-	
-func update_mesh():
-	if params[-1] > 0.1:
-		run_compute()
-		rendering_device.sync()
-		params = [float(size), position.x, position.y, position.z, 0.0, 0.0, 0.0, 0.0]
-	run_compute()
-	rendering_device.sync()
-	fetch_and_process_compute_data()
+	for key in meshes.keys():
+		threads[key].start(run_compute.bind(key, [float(n_voxels_per_axis), key.x, key.y, key.z, 0.0], workgroups_per_chunk))
+		threads[key].wait_to_finish()
 	
 func init_compute():
 	rendering_device= RenderingServer.create_local_rendering_device()
 	# Load compute shader
-	var shader_file : RDShaderFile = load("res://assets/compute/MarchingCubes.glsl")
+	var shader_file : RDShaderFile = load("res://scripts/compute/MarchingCubes.glsl")
 	var shader_spirv : RDShaderSPIRV = shader_file.get_spirv()
 	shader = rendering_device.shader_create_from_spirv(shader_spirv)
 	
 	# Create triangles buffer
 	const max_tris_per_voxel : int = 5
-	const max_triangles : int = max_tris_per_voxel * int(pow(size, 3))
+	const max_triangles : int = max_tris_per_voxel * int(pow(voxels_per_workgroup * workgroups_per_chunk, 3))
 	const bytes_per_float : int = 4
 	const floats_per_triangle : int = 4 * 3
 	const bytes_per_triangle : int = floats_per_triangle * bytes_per_float
@@ -75,7 +63,7 @@ func init_compute():
 	triangle_uniform.add_id(triangle_buffer)
 	
 	# Create voxels buffer
-	const max_voxel_bytes = bytes_per_float * int(pow(size + 1, 3))
+	const max_voxel_bytes = bytes_per_float * int(pow(n_voxels_per_axis + 1, 3))
 	
 	voxel_buffer = rendering_device.storage_buffer_create(max_voxel_bytes)
 	var voxel_uniform = RDUniform.new()
@@ -84,7 +72,7 @@ func init_compute():
 	voxel_uniform.add_id(voxel_buffer)
 	
 	# Create params buffer
-	var params_bytes = PackedFloat32Array(params).to_byte_array()
+	var params_bytes = PackedFloat32Array([0.0, 0.0, 0.0, 0.0, 0.0]).to_byte_array()
 	params_buffer = rendering_device.storage_buffer_create(params_bytes.size(), params_bytes)
 	var params_uniform = RDUniform.new()
 	params_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
@@ -101,7 +89,7 @@ func init_compute():
 	counter_uniform.add_id(counter_buffer)
 	
 	# Create lut buffer
-	var lut = load_lut("res://assets/compute/MarchingCubesLUT.txt")
+	var lut = load_lut("res://scripts/compute/MarchingCubesLUT.txt")
 	var lut_bytes = PackedInt32Array(lut).to_byte_array()
 	lut_buffer = rendering_device.storage_buffer_create(lut_bytes.size(), lut_bytes)
 	var lut_uniform = RDUniform.new()
@@ -114,10 +102,11 @@ func init_compute():
 	buffer_set = rendering_device.uniform_set_create(buffers, shader, 0)
 	pipeline = rendering_device.compute_pipeline_create(shader)
 	
-func run_compute():
+func run_compute(key, params, workgroups):
 	# Update params buffer
 	var params_bytes = PackedFloat32Array(params).to_byte_array()
 	rendering_device.buffer_update(params_buffer, 0, params_bytes.size(), params_bytes)
+	
 	# Reset counter
 	var counter = [0]
 	var counter_bytes = PackedFloat32Array(counter).to_byte_array()
@@ -127,20 +116,21 @@ func run_compute():
 	var compute_list = rendering_device.compute_list_begin()
 	rendering_device.compute_list_bind_compute_pipeline(compute_list, pipeline)
 	rendering_device.compute_list_bind_uniform_set(compute_list, buffer_set, 0)
-	rendering_device.compute_list_dispatch(compute_list, resolution, resolution, resolution)
+	rendering_device.compute_list_dispatch(compute_list, workgroups, workgroups, workgroups)
 	rendering_device.compute_list_end()
 	
 	# Run
 	rendering_device.submit()
+	rendering_device.sync()
 	
-func fetch_and_process_compute_data():
-	# Get output
+	# Fetch data
 	var triangle_data = rendering_device.buffer_get_data(triangle_buffer).to_float32_array()
-	num_triangles = rendering_device.buffer_get_data(counter_buffer).to_int32_array()[0]
-	var num_verts : int = num_triangles * 3
-	verts.resize(num_verts)
-	normals.resize(num_verts)
-	
+	var num_triangles = rendering_device.buffer_get_data(counter_buffer).to_int32_array()[0]
+	print(key, " tris : ", num_triangles)
+	var verts = PackedVector3Array()
+	var normals = PackedVector3Array()
+	verts.resize(num_triangles * 3)
+	normals.resize(num_triangles * 3)
 	for tri_index in range(num_triangles):
 		var i = tri_index * 16
 		var posA = Vector3(triangle_data[i + 0], triangle_data[i + 1], triangle_data[i + 2])
@@ -153,15 +143,14 @@ func fetch_and_process_compute_data():
 		normals[tri_index * 3 + 0] = norm
 		normals[tri_index * 3 + 1] = norm
 		normals[tri_index * 3 + 2] = norm
-	
 	if len(verts) > 0:
 		var mesh_data = []
 		mesh_data.resize(Mesh.ARRAY_MAX)
 		mesh_data[Mesh.ARRAY_VERTEX] = verts
 		mesh_data[Mesh.ARRAY_NORMAL] = normals
-		array_mesh.clear_surfaces()
-		array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_data)
-		collision_shape.set_faces(verts)
+		meshes[key].mesh.clear_surfaces()
+		meshes[key].mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_data)
+		shapes[key].shape.set_faces(verts)
 	
 func load_lut(file_path):
 	var file = FileAccess.open(file_path, FileAccess.READ)

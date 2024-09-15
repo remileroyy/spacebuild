@@ -13,7 +13,7 @@ func _ready():
 	
 	
 func _process(_delta):
-	var pos = get_parent().to_global(get_parent().center_of_mass)
+	var pos = $"..".to_global($"..".center_of_mass)
 	if camera.is_position_in_frustum(pos):
 		global_position = camera.unproject_position(pos)
 		rotation = 0

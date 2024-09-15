@@ -31,5 +31,5 @@ func toggle_grab(node):
 			if child is Snap and not child.connected_to :
 				child.attach()
 	elif node and node is RigidBody3D:
-		node_a = get_parent().get_path()
+		node_a = $"..".get_path()
 		node_b = node.get_path()

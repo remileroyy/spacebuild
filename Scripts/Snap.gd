@@ -5,7 +5,7 @@ var connected_to: Snap
 var self_and_siblings: Array[Node]
 
 func _ready():
-	self_and_siblings = get_parent().get_children().duplicate()
+	self_and_siblings = $"..".get_children().duplicate()
 	
 	
 func get_all_connected(connected: Array = Array()):
@@ -29,7 +29,7 @@ func _physics_process(_delta):
 	
 func attach():
 	for other in get_overlapping_areas():
-		if other.get_parent() != get_parent():
+		if other.get_parent() != $"..":
 			snap_to(other)
 			merge_with(other)
 			break
@@ -49,10 +49,10 @@ func detach():
 	
 	
 func merge_with(other: Snap):
-	get_parent().queue_free()
-	for child in get_parent().get_children():
+	$"..".queue_free()
+	for child in $"..".get_children():
 		child.reparent(other.get_parent())
-	Snap.update_mass_and_com(get_parent())
+	Snap.update_mass_and_com($"..")
 	connected_to = other
 	connected_to.connected_to = self
 	
@@ -76,5 +76,5 @@ func _process(_delta):
 	
 	
 func snap_to(other: Snap):
-	get_parent().global_basis = other.global_basis * Basis.FLIP_Y * Basis.FLIP_X * basis.inverse()
-	get_parent().global_position = other.global_position - get_parent().global_basis * position
+	$"..".global_basis = other.global_basis * Basis.FLIP_Y * Basis.FLIP_X * basis.inverse()
+	$"..".global_position = other.global_position - $"..".global_basis * position

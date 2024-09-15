@@ -7,19 +7,19 @@ class_name Player
 var marker = preload("res://scenes/marker.tscn")
 
 func _ready():
-	get_parent().linear_damp = 0.0
-	get_parent().angular_damp = 0.0
-	$BodyRaycast.add_exception(get_parent())
+	$"../..".linear_damp = 0.0
+	$"../..".angular_damp = 0.0
+	$BodyRaycast.add_exception($"../..")
 	
 	
 func _process(_delta):
-	%Text.text = "[center]%.2f m/s\n%.2f °/s[/center]" % [get_parent().linear_velocity.length(), rad_to_deg(get_parent().angular_velocity.length())]
+	%Text.text = "[center]%.2f m/s\n%.2f °/s[/center]" % [$"../..".linear_velocity.length(), rad_to_deg($"../..".angular_velocity.length())]
 		
 		
 func _physics_process(_delta):
 	var linear = get_linear_input()
 	var angular = get_angular_input()
-	for thrust in get_parent().get_children():
+	for thrust in $"../..".get_children():
 		if thrust is Thrust:
 			thrust.apply_thrust(linear, angular)
 	
@@ -31,8 +31,10 @@ func get_linear_input():
 	linear.z = Input.get_action_strength("Back") - Input.get_action_strength("Forward")
 	if linear.length() > 1e-3:
 		return global_basis * linear
+	elif Input.is_action_pressed("Space") and $"../..".linear_velocity.length() > 0.05:
+		return -$"../..".linear_velocity.normalized()#Vector3.ZERO.move_toward(-$"../..".linear_velocity, 1.0)
 	else:
-		return Vector3.ZERO.move_toward(-get_parent().linear_velocity, 1.0)
+		return Vector3.ZERO
 	
 func get_angular_input():
 	var mouse = get_viewport().get_mouse_position()
@@ -48,8 +50,10 @@ func get_angular_input():
 	angular.z = Input.get_action_strength("Roll-") - Input.get_action_strength("Roll+")
 	if angular.length() > 1e-3:
 		return global_basis * angular
+	elif Input.is_action_pressed("Space") and $"../..".angular_velocity.length() > 0.05:
+		return -$"../..".angular_velocity.normalized()#Vector3.ZERO.move_toward(-$"../..".angular_velocity, 1.0)
 	else:
-		return Vector3.ZERO.move_toward(-get_parent().angular_velocity, 1.0)
+		return Vector3.ZERO
 	
 	
 func _input(event):

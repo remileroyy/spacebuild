@@ -123,26 +123,29 @@ transform = Transform3D(-0.322017, -0.116127, -0.939585, 4.3254e-09, 0.992449, -
 shadow_enabled = true
 
 [node name="Asteroid" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -64, 0, 0)
 script = ExtResource("8_s511y")
 
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Asteroid"]
+cast_shadow = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Asteroid"]
+
 [node name="Construct" type="RigidBody3D" parent="."]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 64, 64, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 64, 64)
 mass = 100.0
 center_of_mass_mode = 1
 
-[node name="Node3D" type="Node3D" parent="Construct"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
-
-[node name="Player" type="Camera3D" parent="Construct/Node3D"]
+[node name="Player" type="Camera3D" parent="Construct"]
+transform = Transform3D(1, 0, 0, 0, 1, 2.98023e-08, 0, -2.98023e-08, 1, 0, 0, 20)
 far = 20000.0
 script = ExtResource("6_8x8ay")
 
-[node name="BodyRaycast" type="RayCast3D" parent="Construct/Node3D/Player"]
+[node name="BodyRaycast" type="RayCast3D" parent="Construct/Player"]
 target_position = Vector3(0, 0, -20)
 hit_back_faces = false
 
 [node name="Tool" type="Generic6DOFJoint3D" parent="Construct"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
 script = ExtResource("7_uqay7")
 dig_radius = 3.0
 
@@ -156,6 +159,9 @@ collide_with_bodies = false
 [node name="BodyRaycast" type="RayCast3D" parent="Construct/Tool"]
 target_position = Vector3(0, 0, -5)
 hit_back_faces = false
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Construct/Tool"]
+spot_range = 100.0
 
 [node name="Cube" type="MeshInstance3D" parent="Construct"]
 mesh = SubResource("ArrayMesh_05jqx")
