@@ -31,8 +31,8 @@ func get_linear_input():
 	linear.z = Input.get_action_strength("Back") - Input.get_action_strength("Forward")
 	if linear.length() > 1e-3:
 		return global_basis * linear
-	elif Input.is_action_pressed("Space") and $"../..".linear_velocity.length() > 0.05:
-		return -$"../..".linear_velocity.normalized()#Vector3.ZERO.move_toward(-$"../..".linear_velocity, 1.0)
+	elif $"../..".linear_velocity.length() > 0.05:
+		return -$"../..".linear_velocity.normalized()
 	else:
 		return Vector3.ZERO
 	
@@ -50,8 +50,8 @@ func get_angular_input():
 	angular.z = Input.get_action_strength("Roll-") - Input.get_action_strength("Roll+")
 	if angular.length() > 1e-3:
 		return global_basis * angular
-	elif Input.is_action_pressed("Space") and $"../..".angular_velocity.length() > 0.05:
-		return -$"../..".angular_velocity.normalized()#Vector3.ZERO.move_toward(-$"../..".angular_velocity, 1.0)
+	elif $"../..".angular_velocity.length() > 0.05:
+		return -$"../..".angular_velocity.normalized()
 	else:
 		return Vector3.ZERO
 	

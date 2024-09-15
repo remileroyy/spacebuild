@@ -165,7 +165,7 @@ float noiseAt(vec3 samplePos)
 }
 
 const float scale = 0.0047;
-const vec3 offset = vec3(555.622, 181.795, 94.446);
+const vec3 offset = vec3(8764.622, 45.795, 3.446);
 
 vec4 evaluate(vec3 coord)
 {   
@@ -175,7 +175,9 @@ vec4 evaluate(vec3 coord)
 	{
 		vec3 samplePos = worldPos * scale + offset;
 		float dist = length(worldPos - vec3(0.5 * size));
-		voxels[index] = 0.8 + 0.1 * noiseAt(samplePos) - 3.0 * dist/size;
+		float cut = pow(2.0 * dist/size + 0.1, 4);
+		float noisy = 0.5;
+		voxels[index] = (1.0 - noisy) + noisy * noiseAt(samplePos) - cut;
 	}
 	return vec4(coord, voxels[index]);
 }

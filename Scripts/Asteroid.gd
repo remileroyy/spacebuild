@@ -1,10 +1,11 @@
 extends StaticBody3D
 class_name Asteroid
 
-const chunks_per_asteroid : int = 2
-const workgroups_per_chunk : int = 8
+const chunks_per_asteroid : int = 4
+const workgroups_per_chunk : int = 4
 const voxels_per_workgroup : int = 8
-const n_voxels_per_axis : int = voxels_per_workgroup * workgroups_per_chunk * chunks_per_asteroid;
+const n_voxels_per_chunk : int = voxels_per_workgroup * workgroups_per_chunk
+const n_voxels_per_axis : int = n_voxels_per_chunk * chunks_per_asteroid;
 
 # Compute stuff
 var rendering_device: RenderingDevice
@@ -20,7 +21,9 @@ var lut_buffer : RID
 
 var meshes : Dictionary
 var shapes : Dictionary
-var threads : Dictionary
+
+var thread : Thread = Thread.new()
+var jobs : Array
 
 func _ready():
 	for x in range(chunks_per_asteroid):
@@ -35,11 +38,38 @@ func _ready():
 				add_child(shapes[chunk_pos])
 				shapes[chunk_pos].position = chunk_pos
 				shapes[chunk_pos].shape = ConcavePolygonShape3D.new()
-				threads[chunk_pos] = Thread.new()
 	init_compute()
 	for key in meshes.keys():
-		threads[key].start(run_compute.bind(key, [float(n_voxels_per_axis), key.x, key.y, key.z, 0.0], workgroups_per_chunk))
-		threads[key].wait_to_finish()
+		jobs.append([float(n_voxels_per_axis), key.x, key.y, key.z, 0.0])
+	
+func _process(_delta) -> void:
+	if !(jobs.is_empty() or thread.is_alive()):
+		thread.wait_to_finish()
+		var params = jobs.pop_front()
+		thread.start(run_compute.bind(params))
+		
+		
+func dig(center, radius):
+	if jobs.is_empty() and !thread.is_alive():
+		jobs.append([float(n_voxels_per_axis), center.x, center.y, center.z, radius])
+		var chunks = {}
+		chunks[get_chunk(center + Vector3(radius, radius, radius))] = null
+		chunks[get_chunk(center + Vector3(radius, radius, -radius))] = null
+		chunks[get_chunk(center + Vector3(radius, -radius, radius))] = null
+		chunks[get_chunk(center + Vector3(radius, -radius, -radius))] = null
+		chunks[get_chunk(center + Vector3(-radius, radius, radius))] = null
+		chunks[get_chunk(center + Vector3(-radius, radius, -radius))] = null
+		chunks[get_chunk(center + Vector3(-radius, -radius, radius))] = null
+		chunks[get_chunk(center + Vector3(-radius, -radius, -radius))] = null
+		for key in chunks.keys():
+			jobs.append([float(n_voxels_per_axis), key.x, key.y, key.z, 0.0])
+		
+func get_chunk(pos):
+	return Vector3(
+		(int(pos.x) / n_voxels_per_chunk) * n_voxels_per_chunk,
+		(int(pos.y) / n_voxels_per_chunk) * n_voxels_per_chunk,
+		(int(pos.z) / n_voxels_per_chunk) * n_voxels_per_chunk
+	)
 	
 func init_compute():
 	rendering_device= RenderingServer.create_local_rendering_device()
@@ -102,7 +132,10 @@ func init_compute():
 	buffer_set = rendering_device.uniform_set_create(buffers, shader, 0)
 	pipeline = rendering_device.compute_pipeline_create(shader)
 	
-func run_compute(key, params, workgroups):
+func run_compute(params):
+	var key = Vector3(params[1], params[2], params[3])
+	var workgroups = 1 if params[4] > 0.1 else workgroups_per_chunk
+	
 	# Update params buffer
 	var params_bytes = PackedFloat32Array(params).to_byte_array()
 	rendering_device.buffer_update(params_buffer, 0, params_bytes.size(), params_bytes)
@@ -124,26 +157,43 @@ func run_compute(key, params, workgroups):
 	rendering_device.sync()
 	
 	# Fetch data
-	var triangle_data = rendering_device.buffer_get_data(triangle_buffer).to_float32_array()
-	var num_triangles = rendering_device.buffer_get_data(counter_buffer).to_int32_array()[0]
-	print(key, " tris : ", num_triangles)
-	var verts = PackedVector3Array()
-	var normals = PackedVector3Array()
-	verts.resize(num_triangles * 3)
-	normals.resize(num_triangles * 3)
-	for tri_index in range(num_triangles):
-		var i = tri_index * 16
-		var posA = Vector3(triangle_data[i + 0], triangle_data[i + 1], triangle_data[i + 2])
-		var posB = Vector3(triangle_data[i + 4], triangle_data[i + 5], triangle_data[i + 6])
-		var posC = Vector3(triangle_data[i + 8], triangle_data[i + 9], triangle_data[i + 10])
-		var norm = Vector3(triangle_data[i + 12], triangle_data[i + 13], triangle_data[i + 14])
-		verts[tri_index * 3 + 0] = posA
-		verts[tri_index * 3 + 1] = posB
-		verts[tri_index * 3 + 2] = posC
-		normals[tri_index * 3 + 0] = norm
-		normals[tri_index * 3 + 1] = norm
-		normals[tri_index * 3 + 2] = norm
-	if len(verts) > 0:
+	if params[4] < 0.1:
+		var triangle_data = rendering_device.buffer_get_data(triangle_buffer).to_float32_array()
+		var num_triangles = rendering_device.buffer_get_data(counter_buffer).to_int32_array()[0]
+		#print(key, " tris : ", num_triangles)
+		var verts = PackedVector3Array()
+		var normals = PackedVector3Array()
+		verts.resize(num_triangles * 3)
+		normals.resize(num_triangles * 3)
+		
+		#var normals_dict = {}
+		for tri_index in range(num_triangles):
+			var i = tri_index * 16
+			var posA = Vector3(triangle_data[i + 0], triangle_data[i + 1], triangle_data[i + 2])
+			var posB = Vector3(triangle_data[i + 4], triangle_data[i + 5], triangle_data[i + 6])
+			var posC = Vector3(triangle_data[i + 8], triangle_data[i + 9], triangle_data[i + 10])
+			var norm = Vector3(triangle_data[i + 12], triangle_data[i + 13], triangle_data[i + 14])
+			verts[tri_index * 3 + 0] = posA
+			verts[tri_index * 3 + 1] = posB
+			verts[tri_index * 3 + 2] = posC
+			#if !normals_dict.has(posA):
+				#normals_dict[posA] = []
+			#normals_dict[posA].append(norm)
+			#if !normals_dict.has(posB):
+				#normals_dict[posB] = []
+			#normals_dict[posB].append(norm)
+			#if !normals_dict.has(posC):
+				#normals_dict[posC] = []
+			#normals_dict[posC].append(norm)
+			normals[tri_index * 3 + 0] = norm
+			normals[tri_index * 3 + 1] = norm
+			normals[tri_index * 3 + 2] = norm
+			
+		#for pos in normals_dict.keys():
+			#normals_dict[pos] = average(normals_dict[pos])
+		#for i in range(len(verts)):
+			#normals[i] = normals_dict[verts[i]]
+			
 		var mesh_data = []
 		mesh_data.resize(Mesh.ARRAY_MAX)
 		mesh_data[Mesh.ARRAY_VERTEX] = verts
@@ -151,6 +201,12 @@ func run_compute(key, params, workgroups):
 		meshes[key].mesh.clear_surfaces()
 		meshes[key].mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_data)
 		shapes[key].shape.set_faces(verts)
+		
+func average(vectors):
+	var sum = Vector3.ZERO
+	for v in vectors:
+		sum += v
+	return sum / len(vectors)
 	
 func load_lut(file_path):
 	var file = FileAccess.open(file_path, FileAccess.READ)
