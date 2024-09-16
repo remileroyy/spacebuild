@@ -126,8 +126,8 @@ shadow_enabled = true
 script = ExtResource("8_s511y")
 
 [node name="Construct" type="RigidBody3D" parent="."]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 64, 64, 0)
-mass = 100.0
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 32, 32, -5)
+mass = 50.0
 center_of_mass_mode = 1
 
 [node name="Node3D" type="Node3D" parent="Construct"]
@@ -141,20 +141,23 @@ script = ExtResource("6_8x8ay")
 target_position = Vector3(0, 0, -20)
 hit_back_faces = false
 
+[node name="SpotLight3D" type="SpotLight3D" parent="Construct/Node3D/Player"]
+spot_range = 20.0
+
 [node name="Tool" type="Generic6DOFJoint3D" parent="Construct"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
 script = ExtResource("7_uqay7")
 dig_radius = 3.0
 
 [node name="AreaRaycast" type="RayCast3D" parent="Construct/Tool"]
-target_position = Vector3(0, 0, -5)
+target_position = Vector3(0, 0, -10)
 collision_mask = 2
 hit_back_faces = false
 collide_with_areas = true
 collide_with_bodies = false
 
 [node name="BodyRaycast" type="RayCast3D" parent="Construct/Tool"]
-target_position = Vector3(0, 0, -5)
+target_position = Vector3(0, 0, -10)
 hit_back_faces = false
 
 [node name="Cube" type="MeshInstance3D" parent="Construct"]

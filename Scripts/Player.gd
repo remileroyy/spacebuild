@@ -31,7 +31,7 @@ func get_linear_input():
 	linear.z = Input.get_action_strength("Back") - Input.get_action_strength("Forward")
 	if linear.length() > 1e-3:
 		return global_basis * linear
-	elif $"../..".linear_velocity.length() > 0.05:
+	elif Input.is_action_pressed("Space") and $"../..".linear_velocity.length() > 0.05:
 		return -$"../..".linear_velocity.normalized()
 	else:
 		return Vector3.ZERO

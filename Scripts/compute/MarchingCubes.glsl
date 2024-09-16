@@ -161,11 +161,11 @@ float noiseAt(vec3 samplePos)
 		samplePos *= 2;
 		amplitude *= 0.5;
 	}
-	return sum;
+	return 0.5 * sum;
 }
 
-const float scale = 0.0047;
-const vec3 offset = vec3(8764.622, 45.795, 3.446);
+const float scale = 0.0037;
+const vec3 offset = vec3(547.622, 145.795, 378.446);
 
 vec4 evaluate(vec3 coord)
 {   
@@ -175,9 +175,7 @@ vec4 evaluate(vec3 coord)
 	{
 		vec3 samplePos = worldPos * scale + offset;
 		float dist = length(worldPos - vec3(0.5 * size));
-		float cut = pow(2.0 * dist/size + 0.1, 4);
-		float noisy = 0.5;
-		voxels[index] = (1.0 - noisy) + noisy * noiseAt(samplePos) - cut;
+		voxels[index] = 0.5 + 0.5 * noiseAt(samplePos) - 2.5 * dist/size;
 	}
 	return vec4(coord, voxels[index]);
 }
@@ -190,7 +188,7 @@ vec4 interpolateVerts(vec4 v1, vec4 v2, float isoLevel)
 }
 
 
-layout(local_size_x = 8, local_size_y = 8, local_size_z = 8) in;
+layout(local_size_x = 4, local_size_y = 4, local_size_z = 4) in;
 void main()
 {
 	vec3 id = gl_GlobalInvocationID;
@@ -199,7 +197,7 @@ void main()
 	// Dig
 	if (digR > 0.1)
 	{
-		vec3 zonePos = vec3(floor(posX) - 4, floor(posY) - 4, floor(posZ) - 4);
+		vec3 zonePos = vec3(floor(posX) - 2, floor(posY) - 2, floor(posZ) - 2);
 		vec3 coord = zonePos + id;
 
 		if ((coord.x >= 0.0) && (coord.x <= size) && (coord.y >= 0.0) && (coord.y <= size) && (coord.z >= 0.0) && (coord.z <= size))

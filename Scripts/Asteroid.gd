@@ -1,11 +1,11 @@
 extends StaticBody3D
 class_name Asteroid
 
-const chunks_per_asteroid : int = 4
+const chunks_per_asteroid : int = 8
 const workgroups_per_chunk : int = 4
-const voxels_per_workgroup : int = 8
-const n_voxels_per_chunk : int = voxels_per_workgroup * workgroups_per_chunk
-const n_voxels_per_axis : int = n_voxels_per_chunk * chunks_per_asteroid;
+const voxels_per_workgroup : int = 4 # also in shader code
+const voxels_per_chunk : int = voxels_per_workgroup * workgroups_per_chunk
+const voxels_per_asteroid : int = voxels_per_chunk * chunks_per_asteroid;
 
 # Compute stuff
 var rendering_device: RenderingDevice
@@ -40,7 +40,7 @@ func _ready():
 				shapes[chunk_pos].shape = ConcavePolygonShape3D.new()
 	init_compute()
 	for key in meshes.keys():
-		jobs.append([float(n_voxels_per_axis), key.x, key.y, key.z, 0.0])
+		jobs.append([float(voxels_per_asteroid), key.x, key.y, key.z, 0.0])
 	
 func _process(_delta) -> void:
 	if !(jobs.is_empty() or thread.is_alive()):
@@ -51,7 +51,7 @@ func _process(_delta) -> void:
 		
 func dig(center, radius):
 	if jobs.is_empty() and !thread.is_alive():
-		jobs.append([float(n_voxels_per_axis), center.x, center.y, center.z, radius])
+		jobs.append([float(voxels_per_asteroid), center.x, center.y, center.z, radius])
 		var chunks = {}
 		chunks[get_chunk(center + Vector3(radius, radius, radius))] = null
 		chunks[get_chunk(center + Vector3(radius, radius, -radius))] = null
@@ -62,13 +62,14 @@ func dig(center, radius):
 		chunks[get_chunk(center + Vector3(-radius, -radius, radius))] = null
 		chunks[get_chunk(center + Vector3(-radius, -radius, -radius))] = null
 		for key in chunks.keys():
-			jobs.append([float(n_voxels_per_axis), key.x, key.y, key.z, 0.0])
+			if key in meshes.keys():
+				jobs.append([float(voxels_per_asteroid), key.x, key.y, key.z, 0.0])
 		
 func get_chunk(pos):
 	return Vector3(
-		(int(pos.x) / n_voxels_per_chunk) * n_voxels_per_chunk,
-		(int(pos.y) / n_voxels_per_chunk) * n_voxels_per_chunk,
-		(int(pos.z) / n_voxels_per_chunk) * n_voxels_per_chunk
+		(int(pos.x) / voxels_per_chunk) * voxels_per_chunk,
+		(int(pos.y) / voxels_per_chunk) * voxels_per_chunk,
+		(int(pos.z) / voxels_per_chunk) * voxels_per_chunk
 	)
 	
 func init_compute():
@@ -93,7 +94,7 @@ func init_compute():
 	triangle_uniform.add_id(triangle_buffer)
 	
 	# Create voxels buffer
-	const max_voxel_bytes = bytes_per_float * int(pow(n_voxels_per_axis + 1, 3))
+	const max_voxel_bytes = bytes_per_float * int(pow(voxels_per_asteroid + 1, 3))
 	
 	voxel_buffer = rendering_device.storage_buffer_create(max_voxel_bytes)
 	var voxel_uniform = RDUniform.new()
@@ -199,7 +200,8 @@ func run_compute(params):
 		mesh_data[Mesh.ARRAY_VERTEX] = verts
 		mesh_data[Mesh.ARRAY_NORMAL] = normals
 		meshes[key].mesh.clear_surfaces()
-		meshes[key].mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_data)
+		if len(verts) > 0:
+			meshes[key].mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_data)
 		shapes[key].shape.set_faces(verts)
 		
 func average(vectors):
